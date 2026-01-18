@@ -1,19 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<!-- 인트로 화면 전체를 감싸는 최상위 레이아웃 -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     tools:context=".MainActivity">
 
-    <TextView
+    <!-- 상단 말풍선 카드 (문제 제기 문구) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_intro_bubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="timepick-test"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="90dp"
+        app:cardBackgroundColor="#0068FF"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- 말풍선 안 텍스트 -->
+        <TextView
+            android:id="@+id/tv_intro_sub_bubble"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="8dp"
+            android:text="아르바이트 시간 맞추기 너무 힘들어요."
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- 메인 설명 문구 (서비스 설명) -->
+    <TextView
+        android:id="@+id/tv_intro_main_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:lineSpacingExtra="8dp"
+        android:text="원하는 시간만 픽!\n따로 시간 조정이 필요없는,"
+        android:textColor="#333333"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/cv_intro_bubble" />
+
+    <!-- 앱 이름 -->
+    <TextView
+        android:id="@+id/tv_intro_brand_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TIME-PICK"
+        android:textColor="#0068FF"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/tv_intro_main_title"
+        app:layout_constraintTop_toBottomOf="@id/tv_intro_main_title" />
+
+    <!-- 메인 캐릭터 / 일러스트 이미지 -->
+    <ImageView
+        android:id="@+id/iv_intro_character"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="30dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/time_pick_main_character"
+        app:layout_constraintBottom_toTopOf="@id/btn_intro_signup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_intro_brand_name" />
+
+    <!-- 회원가입 버튼 -->
+    <Button
+        android:id="@+id/btn_intro_signup"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="#0068FF"
+        android:text="회원가입"
+        android:textColor="#F7F8F9"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_intro_login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- 로그인 버튼 -->
+    <Button
+        android:id="@+id/btn_intro_login"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginBottom="70dp"
+        android:backgroundTint="#F7F8F9"
+        android:text="로그인"
+        android:textColor="#0068FF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 회원가입 과정 중 사용자 역할 선택 화면 -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".RoleSelectActivity">
+
+    <!-- 상단 영역을 구분하기 위한 배경 뷰 -->
+    <View
+        android:id="@+id/view_role_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:background="#FFFFFF"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 이전 화면으로 돌아가기 위한 버튼 -->
+    <ImageButton
+        android:id="@+id/btn_role_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="30dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="뒤로가기"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_back_arrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 현재 회원가입 단계임을 표시하는 상단 제목 -->
+    <TextView
+        android:id="@+id/tv_role_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="회원가입"
+        android:textColor="#333333"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/btn_role_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btn_role_back" />
+
+    <!-- 사용자의 역할 선택을 안내하는 문구 -->
+    <TextView
+        android:id="@+id/tv_role_guide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="40dp"
+        android:text="누구로 활동하나요?"
+        android:textColor="#18191C"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_role_top_bar" />
+
+    <!-- 아르바이트생 역할을 선택하기 위한 카드 -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_role_worker"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="30dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardBackgroundColor="#F7F8F9"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_role_guide">
+
+        <!-- 아르바이트생 역할 설명 영역 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="24dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="-10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="아르바이트생"
+                    android:textColor="#18191C"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="아르바이트를 구하는 입장입니다."
+                    android:textColor="#777D88"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- 아르바이트생 역할을 나타내는 이미지 -->
+            <ImageView
+                android:layout_width="143dp"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:src="@drawable/img_worker_role" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- 사장님 역할을 선택하기 위한 카드 -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_role_boss"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardBackgroundColor="#F7F8F9"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cv_role_worker">
+
+        <!-- 사장님 역할 설명 영역 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="24dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="-10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="사장님"
+                    android:textColor="#18191C"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="아르바이트생을 구하는 입장입니다."
+                    android:textColor="#777D88"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- 사장님 역할을 나타내는 이미지 -->
+            <ImageView
+                android:layout_width="146dp"
+                android:layout_height="187dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/img_boss_role" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- 선택한 역할을 기반으로 다음 회원가입 단계로 이동하는 버튼 -->
+    <Button
+        android:id="@+id/btn_role_next"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginBottom="70dp"
+        android:backgroundTint="#0068FF"
+        android:text="다음"
+        android:textColor="#F7F8F9"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

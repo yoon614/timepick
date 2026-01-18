@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 회원가입 완료 화면 레이아웃 -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".SignUpCompleteActivity">
+
+    <!-- 회원가입 완료 안내 문구 영역 -->
+    <LinearLayout
+        android:id="@+id/layout_complete_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="80dp"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- 사용자 이름을 나타내는 문구 -->
+        <TextView
+            android:id="@+id/tv_complete_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="김슈니님,"
+            android:textColor="#0068FF"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <!-- 회원가입 완료를 알리는 메인 문구 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="회원가입을 축하드립니다."
+            android:textColor="#0068FF"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <!-- 서비스 이용을 유도하는 설명 문구 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="지금 바로 시간을 픽해서 아르바이트를 구해보세요!"
+            android:textColor="#18191C"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- 회원가입 완료 캐릭터 이미지 -->
+    <ImageView
+        android:id="@+id/iv_complete_character"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginVertical="50dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/img_signup_complete_char"
+        app:layout_constraintBottom_toTopOf="@id/btn_complete_start"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.075"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_complete_text"
+        app:layout_constraintVertical_bias="0.554" />
+
+    <!-- 픽하기로 이동하는 버튼 -->
+    <Button
+        android:id="@+id/btn_complete_start"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginBottom="70dp"
+        android:backgroundTint="#0068FF"
+        android:text="픽하러 가기"
+        android:textColor="#F7F8F9"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
