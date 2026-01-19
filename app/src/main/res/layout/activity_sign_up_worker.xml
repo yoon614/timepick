@@ -62,6 +62,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/view_signup_top_bar" />
 
+    <!-- 사용자 이름 미입력시 필수 입력임을 알리는 메시지 -->
+    <TextView
+        android:id="@+id/tv_signup_name_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="8dp"
+        android:text="이름은 필수 항목입니다. 이름을 입력해주세요."
+        android:textColor="#777D88"
+        android:textSize="10sp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/et_signup_name"
+        app:layout_constraintTop_toBottomOf="@id/et_signup_name" /> />
+
     <!-- 이메일 입력 및 중복 확인을 위한 영역 -->
     <LinearLayout
         android:id="@+id/layout_signup_email"
@@ -106,7 +120,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_marginStart="8dp"
-        android:text="사용 가능한 이메일입니다."
+        android:text="사용 가능한 이메일입니다.OR 중복된 이메일입니다. 다시 입력해주세요."
         android:textColor="#777D88"
         android:textSize="10sp"
         android:visibility="gone"
@@ -132,7 +146,7 @@
         android:id="@+id/tv_signup_pw_guide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="2dp"
         android:layout_marginStart="8dp"
         android:text="비밀번호는 반드시 8자리 이상, 문자/숫자/기호만 사용 가능합니다."
         android:textColor="#777D88"
@@ -141,11 +155,13 @@
         app:layout_constraintTop_toBottomOf="@id/et_signup_pw" />
 
     <!-- 비밀번호 확인 입력 필드 -->
+
+    <!-- 비밀번호 불일치 시 안내 메시지 -->
     <EditText
         android:id="@+id/et_signup_pw_confirm"
         android:layout_width="0dp"
         android:layout_height="55dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="7dp"
         android:background="@drawable/bg_input_field"
         android:hint="비밀번호 확인"
         android:inputType="textPassword"
@@ -154,14 +170,13 @@
         app:layout_constraintStart_toStartOf="@id/et_signup_name"
         app:layout_constraintTop_toBottomOf="@id/tv_signup_pw_guide" />
 
-    <!-- 비밀번호 불일치 시 안내 메시지 -->
     <TextView
         android:id="@+id/tv_signup_pw_confirm_error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_marginStart="8dp"
-        android:text="비밀번호가 일치하지 않습니다. 다시 입력해주세요."
+        android:text="비밀번호가 일치하지 않습니다. 다시 입력해주세요. OR 비밀번호를 입력해주세요."
         android:textColor="#777D88"
         android:textSize="10sp"
         android:visibility="gone"
