@@ -1,7 +1,6 @@
 package com.example.timepick
 
 import android.app.Application
-import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.timepick.data.AppDatabase
@@ -10,7 +9,6 @@ import kotlinx.coroutines.launch
 import java.security.MessageDigest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import android.util.Log
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val userDao = AppDatabase.getInstance(application).userDao()
@@ -31,8 +29,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     /* ---------- 회원가입 / 탈퇴 ---------- */
 
-    // 회원 가입 함수 (가입 완료시 유저 객체 반환 + 자동 로그인)
-    fun signUp(email: String, password: String, name: String, onResult: (UserEntity) -> Unit) {
+    // 회원 가입 함수 (가입 완료시 true 반환)
+    fun signUp(email: String, password: String, name: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             val hashed = hashPassword(password)
             val user = UserEntity(email = email, password = hashed, name = name)
@@ -41,7 +39,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             withContext(Dispatchers.IO) {
                 userDao.insertUser(user)
             }
-            onResult(user)
+            onResult(true)
         }
     }
 
@@ -77,7 +75,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return password == confirm
     }
 
-    // 비밀번호 해시화 함수 (평문으로 저장 x)
+    // 비밀번호 해시화 함수
     private fun hashPassword(password: String): String {
         val md = MessageDigest.getInstance("SHA-256")
         val bytes = md.digest(password.toByteArray())
@@ -112,7 +110,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             // 새 비밀번호가 있음 -> 해시, 없으면 기존 비밀번호 사용
-            val passwordToSave = if (newPassword.isNullOrBlank()) {
+            val passwordToSave = if (newPassword.isBlank()) {
                 user.password
             } else {
                 hashPassword(newPassword)
