@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TimePick">
         <activity
+            android:name=".TimePickActivity"
+            android:exported="false" />
+        <activity
             android:name=".SignUpBossActivity"
             android:exported="false" />
         <activity
