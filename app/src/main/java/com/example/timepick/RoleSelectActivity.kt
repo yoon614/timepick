@@ -9,11 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 
 /**
- * RoleSelectActivity - 사용자 역할 선택 화면
- *
- * 플로우:
- * - 알바생 카드 선택 -> SignUpWorkerActivity로 이동
- * - 사장님 카드 선택 -> SignUpBossActivity로 이동 (현재 개발 중)
+ RoleSelectActivity - 사용자 역할 선택 화면
+
+ 플로우:
+  - 알바생 카드 선택 -> SignUpWorkerActivity로 이동
+  - 사장님 카드 선택 -> SignUpBossActivity로 이동
  */
 class RoleSelectActivity : AppCompatActivity() {
 
@@ -37,9 +37,7 @@ class RoleSelectActivity : AppCompatActivity() {
         setupClickListeners()
     }
 
-    /**
-     * View 초기화
-     */
+
     private fun initViews() {
         btnBack = findViewById(R.id.btn_role_back)
         cvWorker = findViewById(R.id.cv_role_worker)
@@ -47,9 +45,7 @@ class RoleSelectActivity : AppCompatActivity() {
         btnNext = findViewById(R.id.btn_role_next)
     }
 
-    /**
-     * 클릭 이벤트 리스너 설정
-     */
+
     private fun setupClickListeners() {
         // 뒤로가기 버튼
         btnBack.setOnClickListener {
@@ -88,7 +84,7 @@ class RoleSelectActivity : AppCompatActivity() {
     }
 
     /**
-     * 역할 선택 처리
+     역할 선택 처리
      */
     private fun selectRole(role: String) {
         selectedRole = role

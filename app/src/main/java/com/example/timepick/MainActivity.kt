@@ -7,10 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 
 /**
  MainActivity - 앱 시작 화면 (회원가입/로그인 선택)
- *
- * 플로우:
- * - 회원가입 버튼 클릭 -> RoleSelectActivity로 이동
- * - 로그인 버튼 클릭 -> LoginActivity로 이동
+
+ 플로우:
+  - 회원가입 버튼 클릭 -> RoleSelectActivity로 이동
+  - 로그인 버튼 클릭 -> LoginActivity로 이동
  */
 class MainActivity : AppCompatActivity() {
 
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-      클릭 이벤트 리스너 설정
+     클릭 이벤트 리스너 설정
      */
     private fun setupClickListeners() {
         // 회원가입 버튼 클릭 -> 역할 선택 화면으로 이동

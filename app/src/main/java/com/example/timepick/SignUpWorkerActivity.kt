@@ -12,15 +12,15 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 
 /**
- * SignUpWorkerActivity - 알바생 회원가입 화면
- *
- * 플로우:
- * - 이름, 이메일, 비밀번호 입력
- * - 이메일 중복 확인
- * - 비밀번호 확인 일치 검사
- * - 가입하기 버튼 클릭 -> SignUpCompleteActivity로 이동
+SignUpWorkerActivity - 알바생 회원가입 화면 (ViewModel 사용)
+ 플로우:
+  - 이름, 이메일, 비밀번호 입력
+  - 이메일 중복 확인
+  - 비밀번호 확인 일치 검사
+  - 가입하기 버튼 클릭 -> SignUpCompleteActivity로 이동
  */
 class SignUpWorkerActivity : AppCompatActivity() {
 
@@ -35,6 +35,9 @@ class SignUpWorkerActivity : AppCompatActivity() {
     private lateinit var tvPwConfirmError: TextView
     private lateinit var btnSubmit: Button
 
+    // ViewModel
+    private lateinit var viewModel: MainViewModel
+
     // 이메일 중복 확인 여부
     private var isEmailChecked = false
     private var isEmailAvailable = false
@@ -42,6 +45,9 @@ class SignUpWorkerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up_worker)
+
+        // ViewModel 초기화
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         // View 초기화
         initViews()
@@ -53,9 +59,7 @@ class SignUpWorkerActivity : AppCompatActivity() {
         setupTextWatchers()
     }
 
-    /**
-     * View 초기화
-     */
+
     private fun initViews() {
         btnBack = findViewById(R.id.btn_signup_back)
         etName = findViewById(R.id.et_signup_name)
@@ -68,9 +72,6 @@ class SignUpWorkerActivity : AppCompatActivity() {
         btnSubmit = findViewById(R.id.btn_signup_submit)
     }
 
-    /**
-     * 클릭 이벤트 리스너 설정
-     */
     private fun setupClickListeners() {
         // 뒤로가기 버튼
         btnBack.setOnClickListener {
@@ -89,7 +90,7 @@ class SignUpWorkerActivity : AppCompatActivity() {
     }
 
     /**
-     * TextWatcher 설정 - 입력값 변경 감지
+     TextWatcher 설정 - 입력값 변경 감지
      */
     private fun setupTextWatchers() {
         // 이메일 입력 필드 변경 시 중복확인 초기화
@@ -114,8 +115,7 @@ class SignUpWorkerActivity : AppCompatActivity() {
     }
 
     /**
-     * 이메일 중복 확인
-     * TODO: 백엔드 API 연동 필요
+     이메일 중복 확인
      */
     private fun checkEmailDuplicate() {
         val email = etEmail.text.toString().trim()
@@ -131,60 +131,48 @@ class SignUpWorkerActivity : AppCompatActivity() {
             return
         }
 
-        // TODO: 백엔드 API 호출로 실제 중복 확인
-        // 현재는 임시로 모든 이메일을 사용 가능으로 처리
-        isEmailChecked = true
-        isEmailAvailable = true
-        tvEmailMsg.text = "사용 가능한 이메일입니다."
-        tvEmailMsg.setTextColor(getColor(android.R.color.holo_green_dark))
-        tvEmailMsg.visibility = View.VISIBLE
+        // ViewModel을 통한 이메일 중복 확인
+        viewModel.isEmailAvailable(email) { isAvailable ->
+            isEmailChecked = true
+            isEmailAvailable = isAvailable
 
-        Toast.makeText(this, "이메일 중복 확인이 완료되었습니다.", Toast.LENGTH_SHORT).show()
-
-        // 실제 구현 예시 (백엔드 연동 시):
-        /*
-        val apiService = RetrofitClient.getApiService()
-        apiService.checkEmailDuplicate(email).enqueue(object : Callback<EmailCheckResponse> {
-            override fun onResponse(call: Call<EmailCheckResponse>, response: Response<EmailCheckResponse>) {
-                if (response.isSuccessful && response.body() != null) {
-                    val isDuplicate = response.body()!!.isDuplicate
-                    if (isDuplicate) {
-                        isEmailChecked = true
-                        isEmailAvailable = false
-                        tvEmailMsg.text = "이미 사용 중인 이메일입니다."
-                        tvEmailMsg.setTextColor(getColor(android.R.color.holo_red_dark))
-                    } else {
-                        isEmailChecked = true
-                        isEmailAvailable = true
-                        tvEmailMsg.text = "사용 가능한 이메일입니다."
-                        tvEmailMsg.setTextColor(getColor(android.R.color.holo_green_dark))
-                    }
-                    tvEmailMsg.visibility = View.VISIBLE
-                }
+            if (isAvailable) {
+                // 사용 가능한 이메일
+                tvEmailMsg.text = "사용 가능한 이메일입니다."
+                tvEmailMsg.setTextColor(getColor(android.R.color.holo_green_dark))
+                tvEmailMsg.visibility = View.VISIBLE
+                Toast.makeText(this, "사용 가능한 이메일입니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                // 이미 사용 중인 이메일
+                tvEmailMsg.text = "이미 사용 중인 이메일입니다."
+                tvEmailMsg.setTextColor(getColor(android.R.color.holo_red_dark))
+                tvEmailMsg.visibility = View.VISIBLE
+                Toast.makeText(this, "이미 사용 중인 이메일입니다.", Toast.LENGTH_SHORT).show()
             }
-            override fun onFailure(call: Call<EmailCheckResponse>, t: Throwable) {
-                Toast.makeText(this@SignUpWorkerActivity, "서버 연결에 실패했습니다.", Toast.LENGTH_SHORT).show()
-            }
-        })
-        */
+        }
     }
 
     /**
-     * 비밀번호 일치 여부 확인
+     비밀번호 일치 여부 확인
      */
     private fun checkPasswordMatch() {
         val pw = etPw.text.toString()
         val pwConfirm = etPwConfirm.text.toString()
 
-        if (pwConfirm.isNotEmpty() && pw != pwConfirm) {
-            tvPwConfirmError.visibility = View.VISIBLE
+        if (pwConfirm.isNotEmpty()) {
+            val isMatch = viewModel.doPasswordMatch(pw, pwConfirm)
+            if (!isMatch) {
+                tvPwConfirmError.visibility = View.VISIBLE
+            } else {
+                tvPwConfirmError.visibility = View.GONE
+            }
         } else {
             tvPwConfirmError.visibility = View.GONE
         }
     }
 
     /**
-     * 회원가입 시도
+     회원가입 시도
      */
     private fun attemptSignUp() {
         val name = etName.text.toString().trim()
@@ -222,49 +210,31 @@ class SignUpWorkerActivity : AppCompatActivity() {
             return
         }
 
-        if (pw.length < 8) {
+        if (!viewModel.isPasswordValid(pw)) {
             Toast.makeText(this, "비밀번호는 8자리 이상이어야 합니다.", Toast.LENGTH_SHORT).show()
             etPw.requestFocus()
             return
         }
 
-        if (pw != pwConfirm) {
+
+        if (!viewModel.doPasswordMatch(pw, pwConfirm)) {
             Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
             etPwConfirm.requestFocus()
             return
         }
 
-        // TODO: 백엔드 API 호출로 실제 회원가입 처리
-        // 현재는 임시로 바로 완료 화면으로 이동
-        signUpSuccess(name)
 
-        // 실제 구현 예시 (백엔드 연동 시):
-        /*
-        val signUpRequest = SignUpRequest(
-            name = name,
-            email = email,
-            password = pw,
-            role = "worker"
-        )
-
-        val apiService = RetrofitClient.getApiService()
-        apiService.signUp(signUpRequest).enqueue(object : Callback<SignUpResponse> {
-            override fun onResponse(call: Call<SignUpResponse>, response: Response<SignUpResponse>) {
-                if (response.isSuccessful && response.body() != null) {
-                    signUpSuccess(name)
-                } else {
-                    Toast.makeText(this@SignUpWorkerActivity, "회원가입에 실패했습니다.", Toast.LENGTH_SHORT).show()
-                }
+        viewModel.signUp(email, pw, name) { success ->
+            if (success) {
+                signUpSuccess(name)
+            } else {
+                Toast.makeText(this, "회원가입 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
             }
-            override fun onFailure(call: Call<SignUpResponse>, t: Throwable) {
-                Toast.makeText(this@SignUpWorkerActivity, "서버 연결에 실패했습니다.", Toast.LENGTH_SHORT).show()
-            }
-        })
-        */
+        }
     }
 
     /**
-     * 회원가입 성공 시 완료 화면으로 이동
+     회원가입 성공 시 완료 화면으로 이동
      */
     private fun signUpSuccess(userName: String) {
         val intent = Intent(this, SignUpCompleteActivity::class.java)

@@ -52,7 +52,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // 비밀번호 해시화 함수 (평문으로 저장 x)
+    // 비밀번호 해시화 함수
     private fun hashPassword(password: String): String {
         val md = MessageDigest.getInstance("SHA-256")
         val bytes = md.digest(password.toByteArray())

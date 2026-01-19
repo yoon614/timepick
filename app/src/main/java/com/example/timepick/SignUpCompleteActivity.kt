@@ -8,11 +8,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 
 /**
- * SignUpCompleteActivity - 회원가입 완료 화면
- *
- * 플로우:
- * - 회원가입 완료 메시지 표시
- * - "픽하러 가기" 버튼 클릭 -> TimePickActivity(타임테이블 화면)로 이동
+ SignUpCompleteActivity - 회원가입 완료 화면
+
+ 플로우:
+  - 회원가입 완료 메시지 표시
+  - "픽하러 가기" 버튼 클릭 -> TimePickActivity(타임테이블 화면)로 이동(구현 중)
  */
 class SignUpCompleteActivity : AppCompatActivity() {
 
@@ -37,25 +37,19 @@ class SignUpCompleteActivity : AppCompatActivity() {
         setupBackPressHandler()
     }
 
-    /**
-     * View 초기화
-     */
     private fun initViews() {
         tvUserName = findViewById(R.id.tv_complete_user_name)
         btnStart = findViewById(R.id.btn_complete_start)
     }
 
     /**
-     * 사용자 이름 설정
+     사용자 이름 설정
      */
     private fun setupUserName() {
         val userName = intent.getStringExtra("USER_NAME") ?: "사용자"
         tvUserName.text = "${userName}님,"
     }
 
-    /**
-     * 클릭 이벤트 리스너 설정
-     */
     private fun setupClickListeners() {
         // 픽하러 가기 버튼 클릭 -> 타임테이블 화면으로 이동
         btnStart.setOnClickListener {
@@ -73,7 +67,7 @@ class SignUpCompleteActivity : AppCompatActivity() {
     }
 
     /**
-     * 뒤로가기 버튼 비활성화
+     뒤로가기 버튼 비활성화
      */
     private fun setupBackPressHandler() {
         // OnBackPressedDispatcher를 사용하여 뒤로가기 동작 제어
