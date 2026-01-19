@@ -16,11 +16,5 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-        // 회원가입 / 로그인 로직 테스트용 코드
-//        val viewModel = MainViewModel(application)
-//        viewModel.runServiceTest()
-
-
     }
 }

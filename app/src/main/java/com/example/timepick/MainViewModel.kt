@@ -7,7 +7,6 @@ import com.example.timepick.data.AppDatabase
 import com.example.timepick.data.UserEntity
 import kotlinx.coroutines.launch
 import java.security.MessageDigest
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -26,7 +25,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // 비밀번호 8자 이상 검사 함수 (8자 이상이면 true 반환)
     fun isPasswordValid(password: String): Boolean {
         return password.length >= 8
-        // TODO: 문자/숫자/기호 포함 검사 추가?
     }
 
     // 비밀번호 재확인 검사 함수
@@ -41,7 +39,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val hashed = hashPassword(password)
             userDao.insertUser(UserEntity(email = email, password = hashed, name = name))
             onResult(true)
-//            Log.d(TAG, "-> [signUp 내부] DB 입력 완료 ($email)")
         }
     }
 
@@ -52,12 +49,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val hashed = hashPassword(password)
             val user = userDao.login(email, hashed)
             onResult(user)
-
-//            if (user != null) {
-//                Log.d(TAG, "-> [logIn 내부] 로그인 성공 (${user.name})")
-//            } else {
-//                Log.e(TAG, "-> [logIn 내부] 로그인 실패 (인증 불일치)")
-//            }
         }
     }
 
