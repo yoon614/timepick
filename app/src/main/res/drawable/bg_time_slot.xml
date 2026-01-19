@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 시간 슬롯의 선택/비선택 상태에 따른 배경 설정 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 선택된 상태 -->
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#0068FF" />
+            <stroke android:width="0.25dp" android:color="#FFFFFF" />
+        </shape>
+    </item>
+
+    <!-- 선택되지 않은 기본 상태 -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <stroke android:width="0.25dp" android:color="#FFFFFF" />
+        </shape>
+    </item>
+
+</selector>
