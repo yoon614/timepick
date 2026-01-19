@@ -74,7 +74,7 @@
         android:textSize="10sp"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="@id/et_signup_name"
-        app:layout_constraintTop_toBottomOf="@id/et_signup_name" /> />
+        app:layout_constraintTop_toBottomOf="@id/et_signup_name" />
 
     <!-- 이메일 입력 및 중복 확인을 위한 영역 -->
     <LinearLayout
