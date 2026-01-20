@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 공고 카드에서 일치율 배지 배경 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 연한 파란색 배경 -->
+    <solid android:color="#E6F0FF" />
+
+    <!-- 둥근 모서리 -->
+    <corners android:radius="10dp" />
+
+</shape>

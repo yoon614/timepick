@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 모집 공고 하나를 카드 형태로 표현하는 RecyclerView 아이템 -->
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="2dp"
+    app:cardPreventCornerOverlap="false">
+
+    <!-- 카드 내부 레이아웃 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:padding="20dp">
+
+        <!-- 공고 제목 -->
+        <TextView
+            android:id="@+id/tv_job_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="알바공고"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- 사용자 시간과의 일치율을 표시하는 배지 -->
+        <TextView
+            android:id="@+id/tv_match_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:background="@drawable/bg_match_rate_badge"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:text="일치율 00%"
+            android:textColor="#0068FF"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/tv_job_title"
+            app:layout_constraintStart_toEndOf="@id/tv_job_title"
+            app:layout_constraintTop_toTopOf="@id/tv_job_title" />
+
+        <!-- 공고 상세 화면으로 이동하는 버튼 -->
+        <ImageButton
+            android:id="@+id/btn_go_detail"
+            android:layout_width="48dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="12dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_back_arrow"
+            android:rotation="180"
+            app:layout_constraintBottom_toBottomOf="@id/tv_job_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_job_title" />
+
+        <!-- 공고의 부가 정보 영역 (지역, 업종) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_job_title">
+
+            <!-- 지역 정보 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="지역 |"
+                    android:textColor="#A6AAB3"
+                    android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/tv_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="지역 이름"
+                    android:textColor="#000000"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- 업종 정보 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="업종 |"
+                    android:textColor="#A6AAB3"
+                    android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/tv_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="업종 이름"
+                    android:textColor="#000000"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

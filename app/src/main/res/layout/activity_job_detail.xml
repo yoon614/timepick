@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 공고 상세 화면 전체 레이아웃 -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- 상단 툴바 배경 영역 -->
+    <View
+        android:id="@+id/view_detail_toolbar_bg"
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:background="#FFFFFF"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 뒤로가기 버튼 -->
+    <ImageButton
+        android:id="@+id/btn_detail_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="30dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_back_arrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 툴바 중앙 제목 텍스트 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="상세 공고"
+        android:textColor="#333333"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/btn_detail_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btn_detail_back" />
+
+    <!-- 상세 정보 스크롤 영역 -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/layout_detail_bottom_buttons"
+        app:layout_constraintTop_toBottomOf="@id/view_detail_toolbar_bg">
+
+        <!-- 상세 내용 전체를 감싸는 컨테이너 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="40dp">
+
+            <!-- 공고(회사) 이름 -->
+            <TextView
+                android:id="@+id/tv_detail_company_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="알바공고"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
+
+            <!-- 근무 조건 섹션 제목 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="근무 조건"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:textSize="16sp" />
+
+            <!-- 근무 조건 정보 묶음 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <!-- 급여 정보 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="급여"
+                        android:textColor="#A6AAB3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="시급 10,320원"
+                        android:textColor="#333333"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 업종 정보 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="업종"
+                        android:textColor="#A6AAB3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="화면 구성을 위한 예시 텍스트"
+                        android:textColor="#333333"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 고용 형태 정보 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="고용 형태"
+                        android:textColor="#A6AAB3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="화면 구성을 위한 예시 텍스트"
+                        android:textColor="#333333"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
+
+            <!-- 모집 조건 섹션 제목 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="모집 조건"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:textSize="16sp" />
+
+            <!-- 모집 조건 정보 묶음 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <!-- 모집 마감일 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="모집 마감"
+                        android:textColor="#A6AAB3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2026.XX.XX"
+                        android:textColor="#333333"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 모집 인원 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="모집 인원"
+                        android:textColor="#A6AAB3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="nn명"
+                        android:textColor="#333333"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 모집 분야 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="모집 분야"
+                        android:textColor="#A6AAB3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="화면 구성을 위한 예시 텍스트"
+                        android:textColor="#333333"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 학력 조건 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="학력"
+                        android:textColor="#A6AAB3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="화면 구성을 위한 예시 텍스트"
+                        android:textColor="#333333"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 우대 사항 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="우대 사항"
+                        android:textColor="#A6AAB3" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="화면 구성을 위한 예시 텍스트"
+                        android:textColor="#333333"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
+
+            <!-- 근무 지역 섹션 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="근무지역"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:textSize="16sp" />
+
+            <!-- 근무 지역 설명 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="화면 구성을 위한 예시 텍스트"
+                android:textColor="#333333" />
+
+            <!-- 지도 표시 영역 -->
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/map_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="20dp"
+                android:background="#F0F0F0" />
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
+
+            <!-- 상세 요강 섹션 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="상세 요강"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:textSize="16sp" />
+
+            <!-- 상세 요강 설명 텍스트 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:lineSpacingExtra="6dp"
+                android:text="매장 운영과 관련된 업무 안내 문구가 노출되는 영역입니다. 근무 조건 및 업무 내용에 대한 설명이 포함될 수 있습니다.\n본 문구는 화면 구성을 위한 예시 텍스트입니다."
+                android:textColor="#333333" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- 하단 고정 버튼 영역 -->
+    <LinearLayout
+        android:id="@+id/layout_detail_bottom_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:elevation="8dp"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- 이력서 확인 버튼 -->
+        <Button
+            android:id="@+id/btn_detail_resume"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:backgroundTint="#A6AAB3"
+            android:text="이력서 확인"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:cornerRadius="12dp" />
+
+        <!-- 지원하기 버튼 -->
+        <Button
+            android:id="@+id/btn_detail_apply"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:backgroundTint="#0068FF"
+            android:text="지원하기"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:cornerRadius="12dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
