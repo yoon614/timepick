@@ -12,9 +12,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TimePick">
         <activity
-            android:name=".JobEmptyActivity"
-            android:exported="false" />
-        <activity
             android:name=".ApplyCompleteActivity"
             android:exported="false" />
         <activity

@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 모집 중인 공고 목록을 보여주는 화면 -->
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- 모집 중인 공고 목록 화면 (리스트 / 빈 상태 전환용 레이아웃) -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F8F9FA">
 
-    <!-- 상단 툴바 배경 영역 -->
+    <!-- 상단 툴바 배경  -->
     <View
         android:id="@+id/view_toolbar_bg"
         android:layout_width="match_parent"
@@ -16,36 +15,35 @@
         android:background="#FFFFFF"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 이전 화면으로 돌아가기 위한 뒤로가기 버튼 -->
+    <!-- 뒤로가기 버튼 -->
     <ImageButton
-        android:id="@+id/btn_back"
+        android:id="@+id/btn_detail_back"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="30dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="뒤로가기"
         android:padding="12dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_back_arrow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 툴바 중앙에 표시되는 화면 제목 -->
+    <!-- 툴바 제목 -->
     <TextView
-        android:id="@+id/tv_toolbar_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="모집 중인 공고"
         android:textColor="#333333"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/btn_back"
+        app:layout_constraintBottom_toBottomOf="@id/btn_detail_back"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/btn_back" />
+        app:layout_constraintTop_toTopOf="@id/btn_detail_back" />
 
-    <!-- 공고 카드 목록을 표시하는 RecyclerView -->
+    <!-- 모집 공고 리스트를 표시하는 RecyclerView -->
+    <!-- 공고가 존재할 경우 visible 상태로 사용 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_job_list"
         android:layout_width="match_parent"
@@ -53,11 +51,43 @@
         android:clipToPadding="false"
         android:paddingTop="12dp"
         android:paddingBottom="30dp"
-        android:overScrollMode="never"
+        android:visibility="visible"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/view_toolbar_bg"
-        tools:itemCount="6"
         tools:listitem="@layout/item_job_card" />
+
+    <!-- 공고가 없을 경우 표시되는 Empty View 레이아웃 -->
+    <!-- RecyclerView 대신 노출되며 기본 상태는 gone -->
+    <LinearLayout
+        android:id="@+id/layout_empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_toolbar_bg"
+        app:layout_constraintVertical_bias="0.4">
+
+        <!-- 공고 없음 상태를 표현하는 안내 이미지 -->
+        <ImageView
+            android:layout_width="207dp"
+            android:layout_height="208dp"
+            android:src="@drawable/img_job_empty" />
+
+        <!-- 검색 결과가 없음을 안내하는 설명 텍스트 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:gravity="center"
+            android:lineSpacingExtra="4dp"
+            android:text="해당 시간에 일치하는 모집 공고가 없습니다.\n다시 검색해주세요."
+            android:textColor="#A6AAB3"
+            android:textSize="14sp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
