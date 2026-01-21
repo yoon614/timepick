@@ -13,16 +13,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 
 /**
- * LoginActivity - 로그인 화면 (ViewModel 사용)
+LoginActivity - 로그인 화면 (ViewModel 사용)
 
  플로우:
   - 이메일, 비밀번호 입력
-  - 로그인 버튼 클릭 -> 로그인 성공 시 타임테이블 화면으로 이동(구현 중)
+  - 로그인 버튼 클릭 -> 로그인 성공 시 타임테이블 화면으로 이동
   - 회원가입하기 텍스트 클릭 -> RoleSelectActivity로 이동
  */
 class LoginActivity : AppCompatActivity() {
 
-
+    // UI 컴포넌트
     private lateinit var btnBack: ImageButton
     private lateinit var etEmail: EditText
     private lateinit var tvErrorEmail: TextView
@@ -49,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     View 초기화
+     * View 초기화
      */
     private fun initViews() {
         btnBack = findViewById(R.id.btn_login_back)
@@ -61,7 +61,9 @@ class LoginActivity : AppCompatActivity() {
         tvGoSignup = findViewById(R.id.tv_login_go_signup)
     }
 
-
+    /**
+     * 클릭 이벤트 리스너 설정
+     */
     private fun setupClickListeners() {
         // 뒤로가기 버튼
         btnBack.setOnClickListener {
@@ -81,7 +83,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     로그인 시도
+     * 로그인 시도 (ViewModel 사용)
      */
     private fun attemptLogin() {
         // 에러 메시지 초기화
@@ -126,26 +128,20 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     로그인 성공 시 메인 화면으로 이동
+     * 로그인 성공 시 메인 화면으로 이동
      */
     private fun loginSuccess() {
         Toast.makeText(this, "로그인 되었습니다.", Toast.LENGTH_SHORT).show()
 
-        // TODO: TimePickActivity로 이동 (타임테이블 화면)
-        // val intent = Intent(this, TimePickActivity::class.java)
-        // intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        // startActivity(intent)
-        // finish()
-
-        // 임시: 현재는 MainActivity로 이동
-        val intent = Intent(this, MainActivity::class.java)
+        // 타임픽 화면으로 이동
+        val intent = Intent(this, TimePickActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }
 
     /**
-     로그인 정보 저장
+     * 로그인 정보 저장 (SharedPreferences 사용)
      */
     private fun saveLoginInfo(userId: String, userName: String) {
         val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
