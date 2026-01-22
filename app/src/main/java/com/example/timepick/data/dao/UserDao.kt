@@ -1,11 +1,9 @@
-package com.example.timepick.data
+package com.example.timepick.data.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.Query
-import com.example.timepick.data.UserEntity
+import com.example.timepick.data.entity.UserEntity
 
 @Dao
 interface UserDao {

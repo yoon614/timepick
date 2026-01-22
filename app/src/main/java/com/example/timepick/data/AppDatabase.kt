@@ -1,16 +1,17 @@
 package com.example.timepick.data
 
 import android.content.Context
-import androidx.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.instance
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.Room
-import com.example.timepick.data.UserDao
-import com.example.timepick.data.UserEntity
-import com.example.timepick.data.JobDao
-import com.example.timepick.data.JobEntity
-import com.example.timepick.data.JobTimeDao
-import com.example.timepick.data.JobTimeEntity
+import com.example.timepick.data.dao.JobDao
+import com.example.timepick.data.dao.JobTimeDao
+import com.example.timepick.data.dao.UserDao
+import com.example.timepick.data.dao.UserTimeDao
+import com.example.timepick.data.entity.UserEntity
+import com.example.timepick.data.entity.JobEntity
+import com.example.timepick.data.entity.JobTimeEntity
+import com.example.timepick.data.entity.UserTimeEntity
 
 
 @Database(
