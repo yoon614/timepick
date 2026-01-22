@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 회원정보 수정 화면 레이아웃 -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- 상단 툴바 영역 배경 -->
+    <View
+        android:id="@+id/view_profile_edit_toolbar_bg"
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:background="#FFFFFF"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 뒤로가기 버튼 -->
+    <ImageButton
+        android:id="@+id/btn_profile_edit_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="30dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_back_arrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 화면 제목 텍스트 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="회원정보 수정"
+        android:textColor="#333333"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/btn_profile_edit_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btn_profile_edit_back" />
+
+    <!-- 입력 항목이 많아 스크롤 가능하도록 ScrollView 사용 -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_profile_edit_toolbar_bg">
+
+        <!-- 전체 입력 폼을 세로로 배치 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingBottom="40dp">
+
+            <!-- 이름 입력 라벨 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="이름"
+                android:textColor="#333333"
+                android:textStyle="bold" />
+
+            <!-- 사용자 이름 입력 필드 -->
+            <EditText
+                android:id="@+id/et_edit_name"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input_rounded"
+                android:hint="이름을 입력해주세요."
+                android:paddingHorizontal="16dp"
+                android:singleLine="true"
+                android:text="김슈니"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <!-- 이메일(아이디) 라벨 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="아이디(이메일)"
+                android:textColor="#333333"
+                android:textStyle="bold" />
+
+            <!-- 이메일 표시용 필드 (수정 불가) -->
+            <EditText
+                android:id="@+id/et_edit_email"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input_rounded"
+                android:enabled="false"
+                android:paddingHorizontal="16dp"
+                android:text="swu1234@email.com"
+                android:textColor="#A6AAB3"
+                android:textSize="14sp" />
+
+            <!-- 현재 비밀번호 라벨 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="현재 비밀번호"
+                android:textColor="#333333"
+                android:textStyle="bold" />
+
+            <!-- 현재 비밀번호 입력 필드 -->
+            <EditText
+                android:id="@+id/et_current_pw"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input_rounded"
+                android:hint="비밀번호 입력"
+                android:inputType="textPassword"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp" />
+
+            <!-- 현재 비밀번호 오류 메시지 -->
+            <TextView
+                android:id="@+id/tv_current_pw_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginStart="8dp"
+                android:text="현재 비밀번호를 입력해주세요."
+                android:textColor="#777D88"
+                android:textSize="10sp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <!-- 새 비밀번호 라벨 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="새 비밀번호"
+                android:textColor="#333333"
+                android:textStyle="bold" />
+
+            <!-- 새 비밀번호 입력 필드 -->
+            <EditText
+                android:id="@+id/et_new_pw"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input_rounded"
+                android:hint="새 비밀번호 입력"
+                android:inputType="textPassword"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp" />
+
+            <!-- 새 비밀번호 규칙 안내 -->
+            <TextView
+                android:id="@+id/tv_new_pw_rule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginStart="8dp"
+                android:text="* 비밀번호는 반드시 8자리 이상, 문자/숫자/기호만 사용 가능합니다."
+                android:textColor="#777D88"
+                android:textSize="10sp" />
+
+            <!-- 새 비밀번호 확인 라벨 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="새 비밀번호 확인"
+                android:textColor="#333333"
+                android:textStyle="bold" />
+
+            <!-- 새 비밀번호 확인 입력 필드 -->
+            <EditText
+                android:id="@+id/et_new_pw_confirm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input_rounded"
+                android:hint="새 비밀번호 확인"
+                android:inputType="textPassword"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp" />
+
+            <!-- 새 비밀번호 불일치 오류 메시지 -->
+            <TextView
+                android:id="@+id/tv_new_pw_confirm_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginStart="8dp"
+                android:text="비밀번호가 일치하지 않습니다. 다시 입력해주세요."
+                android:textColor="#777D88"
+                android:textSize="10sp"
+                android:visibility="gone"
+                tools:visibility="vi" />
+
+            <!-- 회원정보 수정 완료 버튼 -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_profile_edit_confirm"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginTop="50dp"
+                android:background="@drawable/bg_input_rounded"
+                android:backgroundTint="#FFC664"
+                android:text="확인"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
