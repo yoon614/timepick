@@ -47,15 +47,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             // 1. 더미 데이터 삽입 (최초 1회 실행)
             insertDummyData()
-
+            /*
             // 2. 가상의 사용자 데이터 저장
             val testUserIndices = listOf(215, 216,217,222,223,229,230,236,237,243,244)
             saveUserTimes(userId = 1, selectedTimeIndices = testUserIndices) { success ->
                 android.util.Log.d("TEST_LOG", "사용자 시간 저장 성공 여부: $success")
             }
 
+             */
+
             // 3. 매칭 로직 실행
-            findMatchingJobs(testUserIndices)
+            //findMatchingJobs(testUserIndices)
         }
 
         // 4. 관찰(Collect) - 매칭된 공고가 결과로 나오는지 감시
@@ -377,3 +379,4 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 }
+

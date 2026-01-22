@@ -7,10 +7,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 
 /**
- * ApplyCompleteActivity - 아르바이트 지원 완료 화면
+ ApplyCompleteActivity - 아르바이트 지원 완료 화면
  *
- * 플로우:
- * - 지원 완료 메시지 표시
+ 플로우:
+  - 지원 완료 메시지 표시
  * - 확인 버튼 클릭 -> JobListActivity(공고 리스트)로 이동
  * - 뒤로가기 방지 (지원 완료는 되돌릴 수 없음)
  */
