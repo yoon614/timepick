@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 이력서 작성/수정 화면 전체 레이아웃 -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- 상단 툴바 배경 영역 -->
+    <View
+        android:id="@+id/view_resume_edit_toolbar_bg"
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:background="#FFFFFF"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 뒤로가기 버튼 -->
+    <ImageButton
+        android:id="@+id/btn_resume_edit_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="30dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_back_arrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 이력서 작성/수정 화면 타이틀 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="이력서"
+        android:textColor="#333333"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/btn_resume_edit_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btn_resume_edit_back" />
+
+    <!-- 입력 항목이 많아 스크롤이 가능한 영역 -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_resume_edit_toolbar_bg">
+
+        <!-- 이력서 입력 폼 컨테이너 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingBottom="40dp">
+
+            <!-- 이력서 작성 날짜 표시 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="2026.01.16"
+                android:textColor="#A6AAB3"
+                android:textSize="12sp" />
+
+            <!-- 이름 입력 섹션 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="이름"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+
+            <!-- 이름 입력창 및 글자 수 표시 -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <EditText
+                    android:id="@+id/et_resume_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:hint="이름을 입력해주세요."
+                    android:paddingHorizontal="16dp"
+                    android:textSize="14sp" />
+
+                <!-- 이름 글자 수 카운트 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="16dp"
+                    android:text="0/15"
+                    android:textColor="#A6AAB3"
+                    android:textSize="12sp" />
+            </FrameLayout>
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
+
+            <!-- 자기소개 입력 섹션 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="소개"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+
+            <!-- 자기소개 입력창 및 글자 수 표시 -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <EditText
+                    android:id="@+id/et_resume_intro"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:gravity="top"
+                    android:hint="간단한 소개글을 입력해주세요."
+                    android:padding="16dp"
+                    android:textSize="14sp" />
+
+                <!-- 자기소개 글자 수 카운트 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="16dp"
+                    android:text="0/50"
+                    android:textColor="#A6AAB3"
+                    android:textSize="12sp" />
+            </FrameLayout>
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
+
+            <!-- 연락처 정보 입력 영역 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:text="휴대폰"
+                    android:textColor="#A6AAB3" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:hint="010-0000-0000"
+                    android:inputType="phone"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- 주소 입력 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:text="주소"
+                    android:textColor="#A6AAB3" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:hint="주소를 입력해주세요."
+                    android:paddingHorizontal="16dp"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- 이메일 입력 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:text="이메일"
+                    android:textColor="#A6AAB3" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:hint="timepick@email.com"
+                    android:inputType="textEmailAddress"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
+
+            <!-- 학력 및 자격 정보 입력 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:text="최종 학력"
+                    android:textColor="#A6AAB3" />
+
+                <!-- 코틀린 파일에서 다운드랍 연결필요 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/layout_education_trigger"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/bg_input_rounded"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:id="@+id/tv_education_selected"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="학력을 선택해주세요."
+                            android:textColor="#777D88"
+                            android:textSize="14sp" />
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_arrow_down_thin"
+                            android:scaleType="fitCenter" />
+                    </LinearLayout>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cv_education_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:visibility="gone"
+                        app:cardBackgroundColor="#FFFFFF"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="1dp"
+                        tools:visibility="visible">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:divider="@drawable/divider_line"
+                            android:showDividers="middle"
+                            android:paddingVertical="8dp">
+
+                            <TextView
+                                android:id="@+id/tv_option_high"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingVertical="12dp"
+                                android:paddingHorizontal="16dp"
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:text="고등학교 졸업"
+                                android:textColor="#777D88"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/tv_option_college_2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingVertical="12dp"
+                                android:paddingHorizontal="16dp"
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:text="대학(2년제) 졸업"
+                                android:textColor="#777D88"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/tv_option_college_4"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingVertical="12dp"
+                                android:paddingHorizontal="16dp"
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:text="대학(4년제) 졸업"
+                                android:textColor="#777D88"
+                                android:textSize="14sp" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:text="자격 및 능력"
+                    android:textColor="#A6AAB3" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:hint="자격증이나 능력을 입력해주세요."
+                    android:paddingHorizontal="16dp"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
+
+            <!-- 희망 근무 조건 입력 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:text="희망 지역"
+                    android:textColor="#A6AAB3" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:hint="근무 희망 지역을 입력해주세요."
+                    android:paddingHorizontal="16dp"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:text="희망 직종"
+                    android:textColor="#A6AAB3" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:hint="근무 희망 직종을 입력해주세요."
+                    android:paddingHorizontal="16dp"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
+
+            <!-- 경력사항 입력 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="경력사항"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+
+            <!-- 경력 입력창 및 글자 수 표시 -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <EditText
+                    android:id="@+id/et_resume_career"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:gravity="top"
+                    android:hint="지원 공고와 관련된 경력을 자유롭게 기재해주세요."
+                    android:padding="16dp"
+                    android:textSize="14sp" />
+
+                <!-- 경력 글자 수 카운트 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="16dp"
+                    android:text="0/100"
+                    android:textColor="#A6AAB3"
+                    android:textSize="12sp" />
+            </FrameLayout>
+
+            <!-- 이력서 작성/수정 완료 버튼 -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_resume_complete"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginTop="40dp"
+                android:background="@drawable/bg_input_rounded"
+                android:backgroundTint="#FFC664"
+                android:text="완료"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

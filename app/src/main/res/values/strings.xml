@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">TimePick</string>
+    <string-array name="education_list">
+        <item>학력을 선택해주세요.</item>
+        <item>고등학교 졸업</item>
+        <item>대학(2년제) 졸업</item>
+        <item>대학(4년제) 졸업</item>
+    </string-array>
 </resources>

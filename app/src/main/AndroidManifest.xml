@@ -12,6 +12,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TimePick">
         <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ResumeEditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ResumeDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MyPageActivity"
+            android:exported="false" />
+        <activity
             android:name=".ApplyCompleteActivity"
             android:exported="false" />
         <activity

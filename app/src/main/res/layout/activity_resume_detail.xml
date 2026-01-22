@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 이력서 상세 화면 전체 레이아웃 -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- 상단 툴바 배경 영역 -->
+    <View
+        android:id="@+id/view_resume_toolbar_bg"
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:background="#FFFFFF"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 뒤로가기 버튼 -->
+    <ImageButton
+        android:id="@+id/btn_resume_detail_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="30dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_back_arrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 이력서 상세 화면 타이틀 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="이력서"
+        android:textColor="#18191C"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/btn_resume_detail_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btn_resume_detail_back" />
+
+    <!-- 이력서 상세 내용을 스크롤로 표시하기 위한 영역 -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/layout_resume_detail_buttons"
+        app:layout_constraintTop_toBottomOf="@id/view_resume_toolbar_bg">
+
+        <!-- 이력서 상세 정보 컨테이너 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="40dp">
+
+            <!-- 이력서 작성 날짜 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="2026.01.16"
+                android:textColor="#A6AAB3"
+                android:textSize="12sp" />
+
+            <!-- 이력서 작성자 이름 -->
+            <TextView
+                android:id="@+id/tv_resume_detail_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="김슈니"
+                android:textColor="#18191C"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
+
+            <!-- 자기소개 섹션 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="소개"
+                android:textColor="#A6AAB3"
+                android:textSize="14sp" />
+
+            <!-- 자기소개 내용 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="안녕하세요, 성실한 아르바이트생 김슈니입니다."
+                android:textColor="#18191C"
+                android:textStyle="bold" />
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
+
+            <!-- 연락처 정보 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="휴대폰"
+                    android:textColor="#A6AAB3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="010-1234-5678"
+                    android:textColor="#18191C"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 주소 정보 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="주소"
+                    android:textColor="#A6AAB3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="서울특별시 노원구 화랑로"
+                    android:textColor="#18191C"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 이메일 정보 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="이메일"
+                    android:textColor="#A6AAB3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="swu1234@email.com"
+                    android:textColor="#18191C"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
+
+            <!-- 학력 및 자격 정보 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="최종 학력"
+                    android:textColor="#A6AAB3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="대학(4년제)"
+                    android:textColor="#18191C"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="자격 및 능력"
+                    android:textColor="#A6AAB3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="자격증1"
+                    android:textColor="#18191C"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
+
+            <!-- 희망 근무 조건 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="희망 지역"
+                    android:textColor="#A6AAB3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="서울 노원구"
+                    android:textColor="#18191C"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="희망 직종"
+                    android:textColor="#A6AAB3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="베이커리, 카페, 음식점"
+                    android:textColor="#18191C"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
+
+            <!-- 경력 사항 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="경력사항"
+                android:textColor="#A6AAB3"
+                android:textSize="14sp" />
+
+            <!-- 경력 상세 내용 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:lineSpacingExtra="4dp"
+                android:text="아르바이트 경력에 대한 설명 텍스트입니다.\n화면 구성 및 레이아웃 확인을 위한 예시 문구로 입니다.\n실제 데이터 입력 시 해당 내용은 변경됩니다."
+                android:textColor="#18191C"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- 하단 이력서 관리 버튼 영역 -->
+    <LinearLayout
+        android:id="@+id/layout_resume_detail_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:elevation="8dp"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- 이력서 삭제 버튼 -->
+        <Button
+            android:id="@+id/btn_resume_delete"
+            android:layout_width="26dp"
+            android:layout_height="55dp"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:backgroundTint="#A6AAB3"
+            android:text="삭제"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:cornerRadius="12dp" />
+
+        <!-- 이력서 수정 버튼 -->
+        <Button
+            android:id="@+id/btn_resume_edit"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1.2"
+            android:backgroundTint="#FFC664"
+            android:text="수정"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:cornerRadius="12dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
