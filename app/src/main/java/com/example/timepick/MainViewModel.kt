@@ -18,6 +18,7 @@ import com.example.timepick.data.UserTimeDao
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val database = AppDatabase.getInstance(application)
@@ -26,10 +27,50 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val jobDao = database.jobDao()
     private val jobTimeDao = database.jobTimeDao()
 
-    private val _matchedJobs = MutableStateFlow<List<JobEntity>>(emptyList())
-    val matchedJobs: StateFlow<List<JobEntity>> = _matchedJobs
+    // JobEntity 대신 JobMatchResult를 사용하여 일치율까지 전달
+    private val _matchedJobs = MutableStateFlow<List<JobMatchResult>>(emptyList())
+    val matchedJobs: StateFlow<List<JobMatchResult>> = _matchedJobs
 
+    // UI에서 '검색을 수행했는지' 여부를 알기 위한 상태 (결과 없음 화면 노출용)
+    private val _isSearchPerformed = MutableStateFlow(false)
+    val isSearchPerformed: StateFlow<Boolean> = _isSearchPerformed
 
+    // 현재 사용자가 클릭하여 선택한 공고의 상세 정보를 담는 상태
+    private val _selectedJob = MutableStateFlow<JobEntity?>(null)
+    val selectedJob: StateFlow<JobEntity?> = _selectedJob
+
+    // UI에 출력할 정보를 담는 클래스
+    data class JobMatchResult(
+        val job: JobEntity,
+        val matchRate: Int // 일치율 (%)
+    )
+
+    /* ---------- 데이터 삽입 테스트용 코드 ---------- */
+    init {
+        viewModelScope.launch {
+            // 1. 더미 데이터 삽입 (최초 1회 실행)
+            insertDummyData()
+
+            // 2. 가상의 사용자 데이터 저장
+            val testUserIndices = listOf(215, 216,217,222,223,229,230,236,237,243,244)
+            saveUserTimes(userId = 1, selectedTimeIndices = testUserIndices) { success ->
+                android.util.Log.d("TEST_LOG", "사용자 시간 저장 성공 여부: $success")
+            }
+
+            // 3. 매칭 로직 실행
+            findMatchingJobs(testUserIndices)
+        }
+
+        // 4. 관찰(Collect) - 매칭된 공고가 결과로 나오는지 감시
+        viewModelScope.launch {
+            matchedJobs.collect { jobs ->
+                android.util.Log.d("TEST_LOG", "매칭된 공고 개수: ${jobs.size}")
+                jobs.forEach {
+                    android.util.Log.d("TEST_LOG", "매칭된 공고명: ${it.job.title}, 일치율: ${it.matchRate}%")
+                }
+            }
+        }
+    }
 
     /* ---------- 로그인 ---------- */
 
@@ -149,6 +190,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // 앱 초기 실행 시 테스트를 위한 공고 데이터와 공고별 근무 시간 데이터를 DB에 저장하는 함수
     private suspend fun insertDummyData() {
         withContext(Dispatchers.IO) {
+            val existingJobs = jobDao.getAllJobsWithTimes()
+            if (existingJobs.isNotEmpty()) {
+                android.util.Log.d("TEST_LOG", "이미 데이터가 존재하여 더미 데이터를 넣지 않습니다.")
+                return@withContext
+            }
             // JobEntity 리스트 생성 (공고의 이름, 시급, 위치 등 상세 정보)
             val jobs = listOf(
                 JobEntity(
@@ -215,29 +261,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             val allJobTimes = mutableListOf<JobTimeEntity>()
 
-            for (day in 0..4) {//요일
-                for (time in 0..7) {//시간
+            for (time in 0..7) {
+                for (day in 0..4) {
                     allJobTimes.add(JobTimeEntity(jobId = 1, timeIndex = day + (time * 7)))
                 }
             }
 
-            for (day in 0..4) {
-                for (time in 10..17) {
+            for (time in 10..17) {
+                for (day in 0..4) {
                     allJobTimes.add(JobTimeEntity(jobId = 2, timeIndex = day + (time * 7)))
                 }
             }
 
-            for (day in 5..6) {
-                for (time in 30..35) {
+            for (time in 30..35) {
+                for (day in 5..6) {
                     allJobTimes.add(JobTimeEntity(jobId = 3, timeIndex = day + (time * 7)))
                 }
             }
 
-            for (day in listOf(0, 2, 4)) {
-                for (time in 14..21) {
+            for (time in 14..21) {
+                for (day in listOf(0, 2, 4)) {
                     allJobTimes.add(JobTimeEntity(jobId = 4, timeIndex = day + (time * 7)))
                 }
             }
+
 
             jobTimeDao.insertJobTimes(allJobTimes)
         }
@@ -289,32 +336,47 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun findMatchingJobs(userSelectedIndices: List<Int>) {
         viewModelScope.launch {
+            _isSearchPerformed.value = true
 
-            // DB에서 모든 공고 정보와 해당 공고들의 시간 리스트(Relation)를 가져옴
             val allJobsWithTimes = withContext(Dispatchers.IO) {
-                jobDao.getAllJobsWithTimes() // @Transaction 사용 권장
+                jobDao.getAllJobsWithTimes()
             }
 
-            val userSet = userSelectedIndices.toSet() // 비교 속도 향상을 위해 Set으로 변환
-
-            // 전체 공고 리스트를 순회하며 매칭률 계산
-            val resultList = allJobsWithTimes.filter { jobWithTimes ->
-                val jobIndices = jobWithTimes.times.map { it.timeIndex }
-
-                if (jobIndices.isEmpty()) return@filter false
-
-                // 공고 시간 중 사용자가 선택한 시간과 겹치는 개수(교집합) 계산
-                val intersectCount = jobIndices.count { jobTimeIndex ->
-                    userSet.contains(jobTimeIndex)
+            // 1. 시간 선택 안 하고 확인 버튼 클릭 시 -> 전체 공고 노출
+            if (userSelectedIndices.isEmpty()) {
+                _matchedJobs.value = allJobsWithTimes.map {
+                    JobMatchResult(it.job, -1) // 시간이 선택되지 않은 경우 일치율 텍스트뷰를 숨김
                 }
-                // {Match Rate} = {공고 시간 중 사용자가 가능한 시간 수}/{공고가 요구하는 전체 시간 수}*100
-                val matchRate = (intersectCount.toDouble() / jobIndices.size) * 100
+                return@launch
+            }
 
-                matchRate.compareTo(80.0) >= 0
-            }.map { it.job } // JobEntity만 추출
+            // 2. 사용자가 선택한 시간이 있는 경우 (80% 이상 매칭)
+            val resultList = allJobsWithTimes.map { jobWithTimes ->
+                val jobTimeIndices = jobWithTimes.times.map { it.timeIndex }
+                val matchingCount = userSelectedIndices.intersect(jobTimeIndices.toSet()).size
+                val matchRate = if (jobTimeIndices.isNotEmpty()) {
+                    (matchingCount.toDouble() / jobTimeIndices.size * 100).toInt()
+                } else 0
+
+                JobMatchResult(jobWithTimes.job, matchRate)
+            }.filter { it.matchRate >= 80 } // 80% 이상만 필터링
+                .sortedByDescending { it.matchRate }
 
             _matchedJobs.value = resultList
         }
+    }
+
+
+
+    /* ---------- 공고 누르면 상세 공고 내용 보기 ---------- */
+    // 공고 리스트에서 특정 공고를 클릭했을 때 호출할 함수
+    fun selectJob(job: JobEntity) {
+        _selectedJob.value = job
+    }
+
+    // 상세 페이지를 닫거나 초기화할 때 호출
+    fun clearSelectedJob() {
+        _selectedJob.value = null
     }
 
 }
