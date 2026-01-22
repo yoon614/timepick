@@ -119,6 +119,8 @@
         android:id="@+id/layout_resume_card_container"
         android:layout_width="390dp"
         android:layout_height="160dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="12dp"
         android:visibility="gone"
