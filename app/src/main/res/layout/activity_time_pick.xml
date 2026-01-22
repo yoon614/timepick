@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 사용자가 근무 가능 시간을 선택(Time Pick)하는 메인 화면 -->
+<!-- 타임픽 화면 전체 레이아웃 -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -9,7 +9,7 @@
     android:background="#FFFFFF"
     tools:context=".TimePickActivity">
 
-    <!-- 상단 안내 영역 -->
+    <!-- 상단 헤더 영역 (타임픽 설명 영역) -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_timepick_header"
         android:layout_width="match_parent"
@@ -17,7 +17,7 @@
         android:background="#0068FF"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- 화면 제목 텍스트 -->
+        <!-- 타임픽 제목 -->
         <TextView
             android:id="@+id/tv_timepick_title"
             android:layout_width="wrap_content"
@@ -31,7 +31,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- 근무 시간 선택 방법을 설명하는 안내 문구 -->
+        <!-- 타임픽 설명 문구 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -44,15 +44,17 @@
             app:layout_constraintStart_toStartOf="@id/tv_timepick_title"
             app:layout_constraintTop_toBottomOf="@id/tv_timepick_title" />
 
-        <!-- 헤더 우측 배경용 이미지 -->
+        <!-- 헤더 우측 일러스트 이미지 -->
         <ImageView
             android:layout_width="188dp"
             android:layout_height="match_parent"
+            android:layout_marginEnd="16dp"
             android:scaleType="centerInside"
             android:src="@drawable/img_timepick_header_bg"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- 요일 표시 영역 -->
@@ -68,7 +70,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layout_timepick_header">
 
-        <!-- 월~일 요일 텍스트 -->
+        <!-- 각 요일 텍스트 -->
         <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="월" android:textColor="#A6AAB3" android:textSize="12sp" />
         <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="화" android:textColor="#A6AAB3" android:textSize="12sp" />
         <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="수" android:textColor="#A6AAB3" android:textSize="12sp" />
@@ -78,76 +80,100 @@
         <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="일" android:textColor="#A6AAB3" android:textSize="12sp" />
     </LinearLayout>
 
-    <!-- 선택한 시간을 확정하는 버튼 -->
-    <Button
-        android:id="@+id/btn_timepick_confirm"
-        android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginBottom="50dp"
-        android:backgroundTint="#0068FF"
-        android:text="확인"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        app:cornerRadius="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <!-- 시간표 전체를 스크롤로 보여주는 영역 -->
+    <!-- 시간 선택 영역 (스크롤 가능) -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scrollbars="none"
-        app:layout_constraintBottom_toTopOf="@id/btn_timepick_confirm"
+        android:clipToPadding="false"
+        android:paddingBottom="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layout_days">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:orientation="horizontal"
-            android:paddingBottom="20dp">
+            android:orientation="vertical">
 
-            <!-- 좌측 시간대 표시 컬럼 -->
+            <!-- 시간 + 타임테이블 영역 -->
             <LinearLayout
-                android:layout_width="50dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginHorizontal="16dp"
+                android:orientation="horizontal"
+                android:paddingBottom="20dp">
 
-                <!-- 시간 텍스트 (07:00 ~ 24:00) -->
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="07:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="08:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="09:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="10:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="11:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="12:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="13:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="14:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="15:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="16:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="17:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="18:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="19:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="20:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="21:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="22:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="23:00" android:textColor="#A6AAB3" android:textSize="10sp" />
-                <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="24:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                <!-- 좌측 시간 표시 컬럼 -->
+                <LinearLayout
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- 시간 텍스트 (07:00 ~ 24:00) -->
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="07:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="08:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="09:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="10:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="11:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="12:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="13:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="14:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="15:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="16:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="17:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="18:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="19:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="20:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="21:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="22:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="23:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="24:00" android:textColor="#A6AAB3" android:textSize="10sp" />
+                </LinearLayout>
+
+                <!-- 실제 시간 선택용 RecyclerView (7일 x 시간 그리드) -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_time_table"
+                    android:layout_width="match_parent"
+                    android:layout_height="1080dp"
+                    android:background="@drawable/bg_time_table_container"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="7"
+                    tools:itemCount="252"
+                    tools:listitem="@layout/item_time_slot" />
             </LinearLayout>
 
-            <!-- 요일 x 시간 단위 선택 가능한 시간표 -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_time_table"
+            <!-- 타임픽 선택 완료 버튼 -->
+            <Button
+                android:id="@+id/btn_timepick_confirm"
                 android:layout_width="match_parent"
-                android:layout_height="1080dp"
-                android:background="@drawable/bg_time_table_container"
-                android:nestedScrollingEnabled="false"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="7"
-                tools:itemCount="252"
-                tools:listitem="@layout/item_time_slot" />
+                android:layout_height="55dp"
+                android:layout_marginHorizontal="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="25dp"
+                android:backgroundTint="#0068FF"
+                android:text="확인"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                app:cornerRadius="12dp" />
+
         </LinearLayout>
     </ScrollView>
+
+    <!-- 하단 네비게이션 바 -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_bottom_nav"
+        android:elevation="20dp"
+        app:itemRippleColor="@android:color/transparent"
+        app:itemIconTint="@color/selector_nav_item"
+        app:itemTextColor="@color/selector_nav_item"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/menu_bottom_nav"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

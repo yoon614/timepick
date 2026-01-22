@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 마이페이지 화면 전체 레이아웃 -->
+<!-- 마이페이지 전체 화면 레이아웃 -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#F8F9FA">
 
-    <!-- 상단 툴바 영역 배경 -->
+    <!-- 상단 툴바 배경  -->
     <View
         android:id="@+id/view_mypage_toolbar_bg"
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
         android:background="#FFFFFF"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 마이페이지 타이틀 텍스트 -->
+    <!-- 툴바 중앙 타이틀 텍스트 -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 사용자 프로필 영역 (프로필 이미지, 이름, 정보 수정 버튼) -->
+    <!-- 프로필 영역 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_profile"
         android:layout_width="match_parent"
@@ -60,7 +60,7 @@
             app:layout_constraintStart_toEndOf="@id/iv_profile_img"
             app:layout_constraintTop_toTopOf="@id/iv_profile_img" />
 
-        <!-- 회원정보 수정 화면으로 이동하는 버튼 역할의 텍스트 -->
+        <!-- 회원정보 수정 화면으로 이동하는 버튼 -->
         <TextView
             android:id="@+id/btn_edit_profile"
             android:layout_width="wrap_content"
@@ -77,7 +77,7 @@
             app:layout_constraintTop_toBottomOf="@id/tv_user_name" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- 이력서 관리 섹션 헤더 영역 -->
+    <!-- 이력서 관리 섹션 헤더 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_resume_header"
         android:layout_width="match_parent"
@@ -87,7 +87,7 @@
         android:paddingVertical="12dp"
         app:layout_constraintTop_toBottomOf="@id/layout_profile">
 
-        <!-- 이력서 관리 제목 -->
+        <!-- 이력서 관리 타이틀 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- 이력서 추가 버튼 / 이력서가 작성될 경우 없어짐 -->
+        <!-- 이력서 추가 버튼 (이력서가 없을 때만 표시 가능) -->
         <ImageButton
             android:id="@+id/btn_add_resume"
             android:layout_width="30dp"
@@ -114,9 +114,7 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- 이력서가 존재할 경우 표시되는 카드 영역 -->
-
-    <!-- 이력서가 없을 경우 표시되는 안내 영역 -->
+    <!-- 이력서 카드가 존재할 경우 표시되는 영역 -->
     <FrameLayout
         android:id="@+id/layout_resume_card_container"
         android:layout_width="390dp"
@@ -125,13 +123,13 @@
         android:layout_marginTop="12dp"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/layout_resume_header"
-        tools:layout_editor_absoluteX="3dp"
         tools:visibility="visible">
 
-        <!-- 이력서 카드 레이아웃 include -->
+        <!-- 이력서 카드 레이아웃 포함 -->
         <include layout="@layout/item_resume_card" />
     </FrameLayout>
 
+    <!-- 이력서가 없을 경우 표시되는 빈 상태 화면 -->
     <LinearLayout
         android:id="@+id/layout_resume_empty"
         android:layout_width="wrap_content"
@@ -145,13 +143,13 @@
         app:layout_constraintTop_toBottomOf="@id/layout_resume_header"
         app:layout_constraintVertical_bias="0.3">
 
-        <!-- 빈 이력서 상태를 나타내는 이미지 -->
+        <!-- 빈 상태 일러스트 이미지 -->
         <ImageView
             android:layout_width="172dp"
             android:layout_height="167dp"
             android:src="@drawable/img_job_empty" />
 
-        <!-- 이력서 없음 안내 텍스트 -->
+        <!-- 이력서 없음 안내 문구 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -160,7 +158,7 @@
             android:textColor="#A6AAB3"
             android:textSize="14sp" />
 
-        <!-- 이력서 작성을 유도하는 안내 문구 -->
+        <!-- 이력서 작성 유도 문구 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -170,5 +168,23 @@
             android:textColor="#A6AAB3"
             android:textSize="12sp" />
     </LinearLayout>
+
+    <!-- 하단 네비게이션 바 -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_bottom_nav"
+        android:elevation="20dp"
+
+        app:itemRippleColor="@android:color/transparent"
+        app:itemIconTint="@color/selector_nav_item"
+        app:itemTextColor="@color/selector_nav_item"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/menu_bottom_nav"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
