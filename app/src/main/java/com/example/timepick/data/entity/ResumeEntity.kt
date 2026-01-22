@@ -1,4 +1,4 @@
-package com.example.timepick.data
+package com.example.timepick.data.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey

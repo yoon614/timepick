@@ -1,8 +1,9 @@
-package com.example.timepick.data
+package com.example.timepick.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.example.timepick.data.entity.UserTimeEntity
 
 @Dao
 interface UserTimeDao {

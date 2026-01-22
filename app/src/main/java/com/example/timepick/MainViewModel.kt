@@ -4,17 +4,14 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.timepick.data.AppDatabase
-import com.example.timepick.data.UserEntity
+import com.example.timepick.data.entity.UserEntity
 import kotlinx.coroutines.launch
 import java.security.MessageDigest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.example.timepick.data.JobEntity
-import com.example.timepick.data.JobDao
-import com.example.timepick.data.JobTimeEntity
-import com.example.timepick.data.JobTimeDao
-import com.example.timepick.data.UserTimeEntity
-import com.example.timepick.data.UserTimeDao
+import com.example.timepick.data.entity.JobEntity
+import com.example.timepick.data.entity.JobTimeEntity
+import com.example.timepick.data.entity.UserTimeEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
