@@ -15,15 +15,17 @@ import com.example.timepick.data.entity.UserTimeEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import com.example.timepick.data.entity.AppliedJobEntity
+import com.example.timepick.data.entity.ResumeEntity
 
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val database = AppDatabase.getInstance(application)
-    private val userDao = AppDatabase.getInstance(application).userDao()
+    private val userDao = database.userDao()
     private val userTimeDao = database.userTimeDao()
     private val jobDao = database.jobDao()
     private val jobTimeDao = database.jobTimeDao()
+    private val resumeDao = database.resumeDao()
 
     // JobEntity 대신 JobMatchResult를 사용하여 일치율까지 전달
     private val _matchedJobs = MutableStateFlow<List<JobMatchResult>>(emptyList())
@@ -189,6 +191,59 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 )
             }
             onResult(true)
+        }
+    }
+
+    /* ---------- 이력서  ---------- */
+
+    // userId 를 통한 이력서 조회 함수
+    fun loadResume(userId: Int, onResult: (ResumeEntity?) -> Unit) {
+        viewModelScope.launch {
+            val resume = withContext(Dispatchers.IO) {
+                resumeDao.getResumeByUserId(userId)
+            }
+            onResult(resume)
+        }
+    }
+
+    /** 이력서 저장 (insert + update 통합 함수)
+     * - 최초 작성 1회 = insert
+     * - 이후 수정 = userId 존재할 경우 REPLACE
+    */
+    fun saveResume(resume: ResumeEntity, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    resumeDao.insertResume(resume)
+                }
+                onResult(true)
+            } catch (e: Exception) {
+                onResult(false)
+            }
+        }
+    }
+
+    // userId 를 통한 이력서 삭제 함수
+    fun deleteResume(userId: Int, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    resumeDao.deleteResumeByUserId(userId)
+                }
+                onResult(true)
+            } catch (e: Exception) {
+                onResult(false)
+            }
+        }
+    }
+
+    // 이력서 존재 여부 확인 (true 반환: 추가 / false 반환: 수정)
+    fun checkResumeExists(userId: Int, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val exists = withContext(Dispatchers.IO) {
+                resumeDao.isResumeExist(userId)
+            }
+            onResult(exists)
         }
     }
 
