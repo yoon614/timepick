@@ -14,12 +14,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 
 /**
- * EditProfileActivity - 회원정보 수정 화면
- *
- * 플로우:
- * - 현재 사용자 정보 표시
- * - 이름, 비밀번호 수정 가능
- * - MainViewModel의 updateUserInfo() 사용
+ EditProfileActivity - 회원정보 수정 화면
+
+ 플로우:
+  - 현재 사용자 정보 표시
+  - 이름, 비밀번호 수정 가능
+  - MainViewModel의 updateUserInfo() 사용
  */
 class EditProfileActivity : AppCompatActivity() {
 
@@ -66,7 +66,7 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     /**
-     * SharedPreferences에서 로그인 정보 불러오기
+     SharedPreferences에서 로그인 정보 불러오기
      */
     private fun loadUserInfo() {
         val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
@@ -77,9 +77,7 @@ class EditProfileActivity : AppCompatActivity() {
         userEmail = sharedPref.getString("USER_EMAIL", "") ?: ""
     }
 
-    /**
-     * View 초기화
-     */
+
     private fun initViews() {
         btnBack = findViewById(R.id.btn_profile_edit_back)
         etName = findViewById(R.id.et_edit_name)
@@ -93,7 +91,7 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     /**
-     * 현재 사용자 정보 표시
+     현재 사용자 정보 표시
      */
     private fun displayCurrentInfo() {
         etName.setText(userName)
@@ -101,7 +99,7 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     /**
-     * TextWatcher 설정
+     TextWatcher 설정
      */
     private fun setupTextWatchers() {
         // 새 비밀번호 확인 실시간 검증
@@ -115,7 +113,7 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     /**
-     * 새 비밀번호 일치 여부 확인
+     새 비밀번호 일치 여부 확인
      */
     private fun checkNewPasswordMatch() {
         val newPw = etNewPw.text.toString()
@@ -132,9 +130,7 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * 클릭 이벤트 리스너 설정
-     */
+
     private fun setupClickListeners() {
         // 뒤로가기 버튼
         btnBack.setOnClickListener {
@@ -148,7 +144,7 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     /**
-     * 회원정보 수정 시도
+     회원정보 수정 시도
      */
     private fun attemptUpdateProfile() {
         // 에러 메시지 초기화
@@ -212,7 +208,7 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     /**
-     * SharedPreferences 업데이트
+     SharedPreferences 업데이트
      */
     private fun updateSharedPreferences(newName: String) {
         val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)

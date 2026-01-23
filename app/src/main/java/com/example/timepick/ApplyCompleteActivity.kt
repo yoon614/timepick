@@ -11,8 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
  *
  플로우:
   - 지원 완료 메시지 표시
- * - 확인 버튼 클릭 -> JobListActivity(공고 리스트)로 이동
- * - 뒤로가기 방지 (지원 완료는 되돌릴 수 없음)
+  - 확인 버튼 클릭 -> JobListActivity(공고 리스트)로 이동
+  - 뒤로가기 방지 (지원 완료는 되돌릴 수 없음)
  */
 class ApplyCompleteActivity : AppCompatActivity() {
 
@@ -39,16 +39,11 @@ class ApplyCompleteActivity : AppCompatActivity() {
         setupBackPressHandler()
     }
 
-    /**
-     * View 초기화
-     */
+
     private fun initViews() {
         btnConfirm = findViewById(R.id.btn_complete_confirm)
     }
 
-    /**
-     * 클릭 이벤트 리스너 설정
-     */
     private fun setupClickListeners() {
         // 확인 버튼 클릭 -> 공고 리스트로 이동
         btnConfirm.setOnClickListener {
@@ -61,7 +56,7 @@ class ApplyCompleteActivity : AppCompatActivity() {
     }
 
     /**
-     * 뒤로가기 버튼 비활성화
+     뒤로가기 버튼 비활성화
      */
     private fun setupBackPressHandler() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {

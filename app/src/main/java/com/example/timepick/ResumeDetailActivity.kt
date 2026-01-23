@@ -10,14 +10,22 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
+/**
+ ResumeDetailActivity - 이력서 상세 화면
+
+  플로우:
+  - SharedPreferences에서 userId로 이력서 데이터 로드
+  - 이력서 정보 표시 (이름, 소개, 휴대폰, 희망지역, 희망직종, 경력, 학력)
+  - 선택 항목(학력)이 없으면 해당 섹션 숨김
+  - 수정 버튼 -> ResumeEditActivity로 이동
+  - 삭제 버튼 -> 확인 다이얼로그 후 SharedPreferences에서 이력서 삭제
+ */
+
 class ResumeDetailActivity : AppCompatActivity() {
 
     private lateinit var btnBack: ImageButton
     private lateinit var btnEdit: Button
     private lateinit var btnDelete: Button
-
-    private lateinit var tvName: TextView
-    private lateinit var container: LinearLayout
 
     private var userId: String = ""
 
@@ -40,18 +48,6 @@ class ResumeDetailActivity : AppCompatActivity() {
         btnBack = findViewById(R.id.btn_resume_detail_back)
         btnEdit = findViewById(R.id.btn_resume_edit)
         btnDelete = findViewById(R.id.btn_resume_delete)
-
-        tvName = findViewById(R.id.tv_resume_detail_name)
-
-        // ScrollView 안의 LinearLayout 찾기
-        val scrollView = findViewById<View>(R.id.btn_resume_detail_back).parent.parent as ViewGroup
-        for (i in 0 until scrollView.childCount) {
-            val child = scrollView.getChildAt(i)
-            if (child is android.widget.ScrollView) {
-                container = child.getChildAt(0) as LinearLayout
-                break
-            }
-        }
     }
 
     private fun loadResumeData() {
@@ -71,70 +67,113 @@ class ResumeDetailActivity : AppCompatActivity() {
         val career = pref.getString("career", "") ?: ""
         val education = pref.getString("education", null)
 
-        tvName.text = name
-
-        // 소개 찾아서 설정
-        findAndSetText("소개", intro)
-
-        // 필수 항목들
-        findAndSetText("휴대폰", phone)
-        findAndSetText("희망 지역", location)
-        findAndSetText("희망 직종", job)
-
-        // 경력은 "소개" 다음에 표시되므로 별도 처리 필요
-        // 일단 간단하게 처리
-
-        // 선택 항목: 학력 (없으면 숨김)
-        if (education.isNullOrBlank()) {
-            hideSection("최종 학력")
-        } else {
-            findAndSetText("최종 학력", education)
+        // ScrollView > LinearLayout 찾기
+        val container = findScrollViewContainer()
+        if (container == null) {
+            android.widget.Toast.makeText(this, "레이아웃을 찾을 수 없습니다.", android.widget.Toast.LENGTH_SHORT).show()
+            return
         }
-    }
 
-    private fun findAndSetText(label: String, value: String) {
-        for (i in 0 until container.childCount) {
-            val child = container.getChildAt(i)
-            if (child is LinearLayout) {
-                for (j in 0 until child.childCount) {
-                    val textView = child.getChildAt(j)
-                    if (textView is TextView && textView.text.toString() == label) {
-                        // 다음 TextView가 값
-                        if (j + 1 < child.childCount) {
-                            val valueView = child.getChildAt(j + 1)
-                            if (valueView is TextView) {
-                                valueView.text = value
-                            }
-                        }
-                        return
+        // 모든 TextView 찾기
+        val allTextViews = mutableListOf<TextView>()
+        collectAllTextViews(container, allTextViews)
+
+        // 데이터 순서대로 넣기
+        var index = 0
+
+        // 0: 날짜 (건너뛰기)
+        // 1: 이름
+        if (index + 1 < allTextViews.size) {
+            allTextViews[index + 1].text = name
+        }
+
+        // "소개" 라벨 찾기 → 다음 TextView에 intro 넣기
+        for (i in allTextViews.indices) {
+            if (allTextViews[i].text.toString() == "소개") {
+                if (i + 1 < allTextViews.size) {
+                    allTextViews[i + 1].text = intro
+                }
+                break
+            }
+        }
+
+        // "휴대폰", "주소", "이메일", "최종 학력", "희망 지역", "희망 직종", "경력사항" 찾아서 넣기
+        for (i in allTextViews.indices) {
+            val text = allTextViews[i].text.toString()
+
+            when (text) {
+                "휴대폰" -> {
+                    if (i + 1 < allTextViews.size) {
+                        allTextViews[i + 1].text = phone
                     }
                 }
-            } else if (child is TextView) {
-                if (child.text.toString() == label) {
-                    // 다음 child가 값
-                    if (i + 1 < container.childCount) {
-                        val valueView = container.getChildAt(i + 1)
-                        if (valueView is TextView) {
-                            valueView.text = value
+                "주소" -> {
+                    // 주소는 선택 항목이지만 현재 입력받지 않으므로 숨김
+                    (allTextViews[i].parent as? View)?.visibility = View.GONE
+                }
+                "이메일" -> {
+                    // 이메일도 선택 항목이지만 현재 입력받지 않으므로 숨김
+                    (allTextViews[i].parent as? View)?.visibility = View.GONE
+                }
+                "최종 학력" -> {
+                    if (education.isNullOrBlank()) {
+                        (allTextViews[i].parent as? View)?.visibility = View.GONE
+                    } else {
+                        if (i + 1 < allTextViews.size) {
+                            allTextViews[i + 1].text = education
                         }
                     }
-                    return
+                }
+                "자격 및 능력" -> {
+                    // 자격증도 선택 항목이지만 현재 입력받지 않으므로 숨김
+                    (allTextViews[i].parent as? View)?.visibility = View.GONE
+                }
+                "희망 지역" -> {
+                    if (i + 1 < allTextViews.size) {
+                        allTextViews[i + 1].text = location
+                    }
+                }
+                "희망 직종" -> {
+                    if (i + 1 < allTextViews.size) {
+                        allTextViews[i + 1].text = job
+                    }
+                }
+                "경력사항" -> {
+                    if (i + 1 < allTextViews.size) {
+                        allTextViews[i + 1].text = career
+                    }
                 }
             }
         }
     }
 
-    private fun hideSection(label: String) {
-        for (i in 0 until container.childCount) {
-            val child = container.getChildAt(i)
+    private fun findScrollViewContainer(): LinearLayout? {
+        val rootView = window.decorView.findViewById<View>(android.R.id.content)
+        return findScrollViewRecursive(rootView)
+    }
+
+    private fun findScrollViewRecursive(view: View): LinearLayout? {
+        if (view is android.widget.ScrollView) {
+            val child = view.getChildAt(0)
             if (child is LinearLayout) {
-                for (j in 0 until child.childCount) {
-                    val textView = child.getChildAt(j)
-                    if (textView is TextView && textView.text.toString() == label) {
-                        child.visibility = View.GONE
-                        return
-                    }
-                }
+                return child
+            }
+        }
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) {
+                val result = findScrollViewRecursive(view.getChildAt(i))
+                if (result != null) return result
+            }
+        }
+        return null
+    }
+
+    private fun collectAllTextViews(view: View, list: MutableList<TextView>) {
+        if (view is TextView) {
+            list.add(view)
+        } else if (view is ViewGroup) {
+            for (i in 0 until view.childCount) {
+                collectAllTextViews(view.getChildAt(i), list)
             }
         }
     }

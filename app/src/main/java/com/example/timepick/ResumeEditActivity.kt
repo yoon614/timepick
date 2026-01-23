@@ -7,6 +7,17 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 
+/**
+ ResumeEditActivity - 이력서 작성/수정 화면
+
+  플로우:
+  - 필수 입력 항목 6개 (이름, 소개, 휴대폰, 희망지역, 희망직종, 경력)
+  - 선택 입력 항목 1개 (학력 드롭다운)
+  - 필수 항목 미입력 시 해당 항목 Toast + requestFocus
+  - 저장 버튼 -> 필수 검증 후 SharedPreferences에 저장
+  - 저장 완료 후 MyPageActivity로 복귀
+ */
+
 class ResumeEditActivity : AppCompatActivity() {
 
     private lateinit var btnBack: ImageButton

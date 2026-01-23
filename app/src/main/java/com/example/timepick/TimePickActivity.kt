@@ -12,6 +12,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 
+/**
+ TimePickActivity
+
+ 플로우:
+  - 요일별(월~일), 시간대별(오전 8시~오후 10시) 타임 테이블 표시
+  - 타임 슬롯 클릭 -> 선택/해제 토글
+  - SharedPreferences에서 이전 선택 데이터 로드 (userId별 분리)
+  - 저장 버튼 -> DB에 선택한 타임 저장
+ */
+
 class TimePickActivity : AppCompatActivity() {
 
     private lateinit var rvTimeTable: RecyclerView

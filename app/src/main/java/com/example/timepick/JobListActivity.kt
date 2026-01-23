@@ -13,26 +13,24 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 
 /**
- * JobListActivity - 모집 중인 공고 리스트 화면
- *
- * 플로우:
- * - ViewModel의 matchedJobs StateFlow 관찰
- * - 타임픽에서 시간 선택 O: 80% 이상 일치하는 공고 표시 (일치율 표시)
- * - 타임픽에서 시간 선택 X: 전체 공고 표시 (일치율 숨김)
- * - 공고 카드 클릭 -> JobDetailActivity(공고 상세)로 이동
- * - 공고 없으면 Empty View 표시
+ JobListActivity - 모집 중인 공고 리스트 화면
+
+ 플로우:
+  - ViewModel의 matchedJobs StateFlow 관찰
+  - 타임픽에서 시간 선택 O: 80% 이상 일치하는 공고 표시 (일치율 표시)
+  - 타임픽에서 시간 선택 X: 전체 공고 표시 (일치율 숨김)
+  - 공고 카드 클릭 -> JobDetailActivity(공고 상세)로 이동
+  - 공고 없으면 Empty View 표시
  */
 class JobListActivity : AppCompatActivity() {
 
-    // UI 컴포넌트
     private lateinit var btnBack: ImageButton
     private lateinit var rvJobList: RecyclerView
     private lateinit var layoutEmptyView: LinearLayout
 
-    // ViewModel
     private lateinit var viewModel: MainViewModel
 
-    // 공고 리스트 어댑터
+
     private lateinit var jobListAdapter: JobListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +39,7 @@ class JobListActivity : AppCompatActivity() {
 
         android.util.Log.d("JobListActivity", "=== onCreate 시작 ===")
 
-        // ViewModel 초기화
+
         viewModel = ViewModelProvider(
             this,
             ViewModelProvider.AndroidViewModelFactory.getInstance(application)
@@ -90,9 +88,6 @@ class JobListActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * View 초기화
-     */
     private fun initViews() {
         btnBack = findViewById(R.id.btn_detail_back)
         rvJobList = findViewById(R.id.rv_job_list)
@@ -100,7 +95,7 @@ class JobListActivity : AppCompatActivity() {
     }
 
     /**
-     * RecyclerView 설정
+     RecyclerView 설정
      */
     private fun setupRecyclerView() {
         rvJobList.layoutManager = LinearLayoutManager(this)
@@ -120,9 +115,7 @@ class JobListActivity : AppCompatActivity() {
         rvJobList.adapter = jobListAdapter
     }
 
-    /**
-     * ViewModel 관찰
-     */
+
     private fun observeViewModel() {
         lifecycleScope.launch {
             viewModel.matchedJobs.collect { matchedJobs ->
@@ -150,9 +143,6 @@ class JobListActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * 클릭 이벤트 리스너 설정
-     */
     private fun setupClickListeners() {
         // 뒤로가기 버튼
         btnBack.setOnClickListener {
@@ -162,7 +152,7 @@ class JobListActivity : AppCompatActivity() {
 }
 
 /**
- * JobListAdapter - 공고 리스트 어댑터
+ JobListAdapter - 공고 리스트 어댑터
  */
 class JobListAdapter(
     private var jobList: List<MainViewModel.JobMatchResult>,
@@ -213,7 +203,7 @@ class JobListAdapter(
     override fun getItemCount(): Int = jobList.size
 
     /**
-     * 공고 리스트 업데이트
+     공고 리스트 업데이트
      */
     fun updateJobs(newJobs: List<MainViewModel.JobMatchResult>) {
         jobList = newJobs

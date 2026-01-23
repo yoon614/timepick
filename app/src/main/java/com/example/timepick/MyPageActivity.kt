@@ -11,6 +11,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
+/**
+ MyPageActivity
+
+ 플로우:
+  - SharedPreferences에서 사용자 정보(이름) 표시
+  - 이력서 존재 여부 확인 -> 있으면 카드 표시, 없으면 + 버튼 표시
+  - 이력서 카드/빈 영역 클릭 -> ResumeDetailActivity 또는 ResumeEditActivity로 이동
+  - 프로필 수정 버튼 -> EditProfileActivity로 이동
+ */
+
 class MyPageActivity : AppCompatActivity() {
 
     private lateinit var tvUserName: TextView
@@ -79,30 +89,45 @@ class MyPageActivity : AppCompatActivity() {
     }
 
     private fun setupResumeCard() {
-        // item_resume_card.xml inflate
-        layoutResumeCardContainer.removeAllViews()
-        val cardView = layoutInflater.inflate(R.layout.item_resume_card, layoutResumeCardContainer, false)
-        layoutResumeCardContainer.addView(cardView)
+        try {
+            // item_resume_card.xml inflate
+            layoutResumeCardContainer.removeAllViews()
+            val cardView = layoutInflater.inflate(R.layout.item_resume_card, layoutResumeCardContainer, false)
+            layoutResumeCardContainer.addView(cardView)
 
-        // 이력서 데이터 표시
-        val pref = getSharedPreferences("TimePick_Resume_$userId", MODE_PRIVATE)
-        val name = pref.getString("name", "")
-        val location = pref.getString("location", "")
-        val job = pref.getString("job", "")
+            // 이력서 데이터 표시
+            val pref = getSharedPreferences("TimePick_Resume_$userId", MODE_PRIVATE)
+            val name = pref.getString("name", "") ?: ""
+            val location = pref.getString("location", "") ?: ""
+            val job = pref.getString("job", "") ?: ""
 
-        cardView.findViewById<TextView>(R.id.tv_resume_name)?.text = name
-        cardView.findViewById<TextView>(R.id.tv_resume_location)?.text = location
-        cardView.findViewById<TextView>(R.id.tv_resume_category)?.text = job
+            val tvName = cardView.findViewById<TextView>(R.id.tv_resume_name)
+            val tvLocation = cardView.findViewById<TextView>(R.id.tv_resume_location)
+            val tvCategory = cardView.findViewById<TextView>(R.id.tv_resume_category)
+            val btnDetail = cardView.findViewById<ImageButton>(R.id.btn_resume_detail)
 
-        // 클릭 이벤트
-        val btnResumeDetail = cardView.findViewById<ImageButton>(R.id.btn_resume_detail)
-        val goToDetail = {
-            val intent = Intent(this, ResumeDetailActivity::class.java)
-            startActivity(intent)
+            tvName?.text = name
+            tvLocation?.text = location
+            tvCategory?.text = job
+
+            // 클릭 이벤트
+            val goToDetail = {
+                try {
+                    val intent = Intent(this, ResumeDetailActivity::class.java)
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(this, "오류가 발생했습니다: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            cardView.setOnClickListener { goToDetail() }
+            btnDetail?.setOnClickListener { goToDetail() }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "카드 로드 오류: ${e.message}", Toast.LENGTH_LONG).show()
         }
-
-        cardView.setOnClickListener { goToDetail() }
-        btnResumeDetail?.setOnClickListener { goToDetail() }
     }
 
     private fun setupClickListeners() {
