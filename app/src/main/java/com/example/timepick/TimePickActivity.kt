@@ -46,7 +46,7 @@ class TimePickActivity : AppCompatActivity() {
         initViews()
 
         if (userId != 0) {
-            loadPreviousSelection()
+            //loadPreviousSelection() //이 부분 주석처리
         }
 
         setupRecyclerView()
