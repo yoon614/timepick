@@ -15,13 +15,15 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 /**
- MyPageActivity - 마이페이지 화면
-
- 플로우:
-  - MainViewModel로 이력서 존재 여부 확인 -> 있으면 카드 표시, 없으면 + 버튼 표시
-  - 이력서 카드/빈 영역 클릭 -> ResumeDetailActivity 또는 ResumeEditActivity로 이동
-  - 프로필 수정 버튼 -> EditProfileActivity로 이동
-  - 더보기 버튼 -> 회원탈퇴/로그아웃 메뉴 표시
+ * MyPageActivity - 마이페이지 화면
+ *
+ * 플로우:
+ * - SharedPreferences에서 사용자 정보(이름) 표시
+ * - MainViewModel로 이력서 존재 여부 확인 -> 있으면 카드 표시, 없으면 + 버튼 표시
+ * - 이력서 카드/빈 영역 클릭 -> ResumeDetailActivity 또는 ResumeEditActivity로 이동
+ * - 프로필 수정 버튼 -> EditProfileActivity로 이동
+ * - 더보기 버튼 -> 회원탈퇴/로그아웃 메뉴 표시
+ * - 하단 네비게이션 (캘린더=준비중, 홈=타임테이블, 마이페이지=현재화면)
  */
 class MyPageActivity : AppCompatActivity() {
 
@@ -58,6 +60,8 @@ class MyPageActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        loadUserInfo()  // SharedPreferences에서 최신 정보 로드
+        displayUserInfo()  // 화면에 표시
         displayResumeStatus()
     }
 
@@ -223,9 +227,12 @@ class MyPageActivity : AppCompatActivity() {
 
     // 로그아웃 처리
     private fun logout() {
-        // SharedPreferences 초기화
+        // 로그인 상태만 false로 변경 (userId, userName 유지)
         val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
-        sharedPref.edit().clear().apply()
+        sharedPref.edit().apply {
+            putBoolean("IS_LOGGED_IN", false)
+            apply()
+        }
 
         Toast.makeText(this, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
 
