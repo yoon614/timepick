@@ -14,6 +14,7 @@ import com.example.timepick.data.entity.JobTimeEntity
 import com.example.timepick.data.entity.UserTimeEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import com.example.timepick.data.entity.AppliedJobEntity
 
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -35,6 +36,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // 현재 사용자가 클릭하여 선택한 공고의 상세 정보를 담는 상태
     private val _selectedJob = MutableStateFlow<JobEntity?>(null)
     val selectedJob: StateFlow<JobEntity?> = _selectedJob
+
+    private val appliedJobDao = database.appliedJobDao()
+
+    // 사용자가 특정 공고에 지원했는지 상태를 저장할 변수
+    private val _isAlreadyApplied = MutableStateFlow<Boolean>(false)
+    val isAlreadyApplied: StateFlow<Boolean> = _isAlreadyApplied
 
     // UI에 출력할 정보를 담는 클래스
     data class JobMatchResult(
@@ -365,17 +372,39 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
-
     /* ---------- 공고 누르면 상세 공고 내용 보기 ---------- */
-    // 공고 리스트에서 특정 공고를 클릭했을 때 호출할 함수
-    fun selectJob(job: JobEntity) {
+    // userId를 추가로 받아서 지원 여부까지 한 번에 업데이트합니다.
+    fun selectJob(job: JobEntity, userId: Int) {
         _selectedJob.value = job
+        // 공고를 선택하자마자 해당 유저가 지원했는지 바로 체크
+        checkIfApplied(userId, job.jobId)
     }
 
-    // 상세 페이지를 닫거나 초기화할 때 호출
+    // 상세 페이지를 닫을 때 상태 초기화
     fun clearSelectedJob() {
         _selectedJob.value = null
+        _isAlreadyApplied.value = false // 다음 공고를 위해 상태를 깨끗이 비워둠
+    }
+
+
+    /* ---------- 지원하기 기능 ---------- */
+    fun applyToJob(userId: Int, jobId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            // 이미 지원했는지 한 번 더 확인 후 삽입.
+            val existing = appliedJobDao.getAppliedJob(userId, jobId)
+            if (existing == null) {
+                appliedJobDao.insertAppliedJob(AppliedJobEntity(userId, jobId))
+                _isAlreadyApplied.value = true
+            }
+        }
+    }
+
+    /* ---------- 지원 여부 확인 ---------- */
+    fun checkIfApplied(userId: Int, jobId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = appliedJobDao.getAppliedJob(userId, jobId)
+            _isAlreadyApplied.value = (result != null)
+        }
     }
 
 }
