@@ -8,28 +8,33 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 /**
- * MyPageActivity - 마이페이지 화면
- *
- * 플로우:
- * - SharedPreferences에서 사용자 정보(이름) 표시
- * - MainViewModel로 이력서 존재 여부 확인 -> 있으면 카드 표시, 없으면 + 버튼 표시
- * - 이력서 카드/빈 영역 클릭 -> ResumeDetailActivity 또는 ResumeEditActivity로 이동
- * - 프로필 수정 버튼 -> EditProfileActivity로 이동
- * - 하단 네비게이션 (캘린더=준비중, 홈=타임테이블, 마이페이지=현재화면)
+ MyPageActivity - 마이페이지 화면
+
+ 플로우:
+  - MainViewModel로 이력서 존재 여부 확인 -> 있으면 카드 표시, 없으면 + 버튼 표시
+  - 이력서 카드/빈 영역 클릭 -> ResumeDetailActivity 또는 ResumeEditActivity로 이동
+  - 프로필 수정 버튼 -> EditProfileActivity로 이동
+  - 더보기 버튼 -> 회원탈퇴/로그아웃 메뉴 표시
  */
 class MyPageActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var tvUserName: TextView
     private lateinit var btnEditProfile: TextView
+    private lateinit var btnMore: ImageButton
     private lateinit var btnAddResume: ImageButton
     private lateinit var layoutResumeCardContainer: FrameLayout
     private lateinit var layoutResumeEmpty: LinearLayout
+    private lateinit var cvMoreMenu: CardView
+    private lateinit var btnMenuWithdraw: TextView
+    private lateinit var btnMenuLogout: TextView
     private lateinit var bottomNav: BottomNavigationView
 
     private var userId: Int = 0
@@ -68,9 +73,13 @@ class MyPageActivity : AppCompatActivity() {
     private fun initViews() {
         tvUserName = findViewById(R.id.tv_user_name)
         btnEditProfile = findViewById(R.id.btn_edit_profile)
+        btnMore = findViewById(R.id.btn_more)
         btnAddResume = findViewById(R.id.btn_add_resume)
         layoutResumeCardContainer = findViewById(R.id.layout_resume_card_container)
         layoutResumeEmpty = findViewById(R.id.layout_resume_empty)
+        cvMoreMenu = findViewById(R.id.cv_more_menu)
+        btnMenuWithdraw = findViewById(R.id.btn_menu_withdraw)
+        btnMenuLogout = findViewById(R.id.btn_menu_logout)
         bottomNav = findViewById(R.id.bottom_navigation)
     }
 
@@ -127,20 +136,104 @@ class MyPageActivity : AppCompatActivity() {
 
     // 클릭 리스너 설정
     private fun setupClickListeners() {
+        // 프로필 수정
         btnEditProfile.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
             startActivity(intent)
         }
 
+        // 이력서 추가
         btnAddResume.setOnClickListener {
             val intent = Intent(this, ResumeEditActivity::class.java)
             startActivity(intent)
         }
 
+        // 빈 화면 클릭
         layoutResumeEmpty.setOnClickListener {
             val intent = Intent(this, ResumeEditActivity::class.java)
             startActivity(intent)
         }
+
+        // 더보기 버튼 (메뉴 토글)
+        btnMore.setOnClickListener {
+            cvMoreMenu.visibility = if (cvMoreMenu.visibility == View.VISIBLE) {
+                View.GONE
+            } else {
+                View.VISIBLE
+            }
+        }
+
+        // 회원탈퇴
+        btnMenuWithdraw.setOnClickListener {
+            cvMoreMenu.visibility = View.GONE
+            showWithdrawDialog()
+        }
+
+        // 로그아웃
+        btnMenuLogout.setOnClickListener {
+            cvMoreMenu.visibility = View.GONE
+            showLogoutDialog()
+        }
+    }
+
+    // 회원탈퇴 확인 다이얼로그
+    private fun showWithdrawDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("회원탈퇴")
+            .setMessage("정말 탈퇴하시겠습니까?\n모든 데이터가 삭제되며 복구할 수 없습니다.")
+            .setPositiveButton("탈퇴") { _, _ ->
+                withdrawUser()
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    // 로그아웃 확인 다이얼로그
+    private fun showLogoutDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("로그아웃")
+            .setMessage("로그아웃 하시겠습니까?")
+            .setPositiveButton("확인") { _, _ ->
+                logout()
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    // 회원탈퇴 처리
+    private fun withdrawUser() {
+        viewModel.deleteUser(userId) { success ->
+            if (success) {
+                // SharedPreferences 초기화
+                val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
+                sharedPref.edit().clear().apply()
+
+                Toast.makeText(this, "회원탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
+
+                // 로그인 화면으로 이동
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(this, "회원탈퇴에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // 로그아웃 처리
+    private fun logout() {
+        // SharedPreferences 초기화
+        val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
+        sharedPref.edit().clear().apply()
+
+        Toast.makeText(this, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+
+        // 로그인 화면으로 이동
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 
     // 하단 네비게이션 설정
