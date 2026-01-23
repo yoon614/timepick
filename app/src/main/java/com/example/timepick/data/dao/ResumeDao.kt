@@ -1,11 +1,12 @@
 package com.example.timepick.data.dao
 
+import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import com.example.timepick.data.entity.ResumeEntity
 
+@Dao
 interface ResumeDao {
 
     // userId로 이력서 조회 (Resume 객체 반환)
