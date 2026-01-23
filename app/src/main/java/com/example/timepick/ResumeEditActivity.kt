@@ -6,20 +6,12 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-
-/**
- ResumeEditActivity - 이력서 작성/수정 화면
-
-  플로우:
-  - 필수 입력 항목 6개 (이름, 소개, 휴대폰, 희망지역, 희망직종, 경력)
-  - 선택 입력 항목 1개 (학력 드롭다운)
-  - 필수 항목 미입력 시 해당 항목 Toast + requestFocus
-  - 저장 버튼 -> 필수 검증 후 SharedPreferences에 저장
-  - 저장 완료 후 MyPageActivity로 복귀
- */
+import androidx.lifecycle.ViewModelProvider
+import com.example.timepick.data.entity.ResumeEntity
 
 class ResumeEditActivity : AppCompatActivity() {
 
+    private lateinit var viewModel: MainViewModel
     private lateinit var btnBack: ImageButton
     private lateinit var btnSave: Button
 
@@ -35,11 +27,16 @@ class ResumeEditActivity : AppCompatActivity() {
     private lateinit var listCard: CardView
 
     private var selectedEducation: String? = null
-    private var userId: String = ""
+    private var userId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_resume_edit)
+
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+        )[MainViewModel::class.java]
 
         loadUserId()
         initViews()
@@ -50,7 +47,8 @@ class ResumeEditActivity : AppCompatActivity() {
 
     private fun loadUserId() {
         val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
-        userId = sharedPref.getString("USER_ID", "") ?: ""
+        val userIdString = sharedPref.getString("USER_ID", "0") ?: "0"
+        userId = userIdString.toIntOrNull() ?: 0
     }
 
     private fun initViews() {
@@ -89,20 +87,20 @@ class ResumeEditActivity : AppCompatActivity() {
     }
 
     private fun loadResumeData() {
-        val pref = getSharedPreferences("TimePick_Resume_$userId", MODE_PRIVATE)
+        viewModel.loadResume(userId) { resume ->
+            resume?.let {
+                etName.setText(it.name)
+                etIntro.setText(it.intro)
+                etPhone.setText(it.phone)
+                etLocation.setText(it.desiredRegion)
+                etJob.setText(it.desiredJob)
+                etCareer.setText(it.career)
 
-        if (pref.contains("name")) {
-            etName.setText(pref.getString("name", ""))
-            etIntro.setText(pref.getString("intro", ""))
-            etPhone.setText(pref.getString("phone", ""))
-            etLocation.setText(pref.getString("location", ""))
-            etJob.setText(pref.getString("job", ""))
-            etCareer.setText(pref.getString("career", ""))
-
-            pref.getString("education", null)?.let {
-                selectedEducation = it
-                tvEducationSelected.text = it
-                tvEducationSelected.setTextColor(Color.parseColor("#18191C"))
+                it.education?.let { edu ->
+                    selectedEducation = edu
+                    tvEducationSelected.text = edu
+                    tvEducationSelected.setTextColor(Color.parseColor("#18191C"))
+                }
             }
         }
     }
@@ -153,26 +151,27 @@ class ResumeEditActivity : AppCompatActivity() {
             }
         }
 
-        val pref = getSharedPreferences("TimePick_Resume_$userId", MODE_PRIVATE)
-        pref.edit().apply {
-            putString("name", name)
-            putString("intro", intro)
-            putString("phone", phone)
-            putString("location", location)
-            putString("job", job)
-            putString("career", career)
+        val resume = ResumeEntity(
+            userId = userId,
+            name = name,
+            intro = intro,
+            phone = phone,
+            desiredRegion = location,
+            desiredJob = job,
+            career = career,
+            address = null,
+            email = null,
+            education = selectedEducation,
+            skills = null
+        )
 
-            if (selectedEducation.isNullOrBlank()) {
-                remove("education")
+        viewModel.saveResume(resume) { success ->
+            if (success) {
+                Toast.makeText(this, "이력서가 저장되었습니다.", Toast.LENGTH_SHORT).show()
+                finish()
             } else {
-                putString("education", selectedEducation)
+                Toast.makeText(this, "이력서 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
-
-            putBoolean("has_resume", true)
-            apply()
         }
-
-        Toast.makeText(this, "이력서가 저장되었습니다.", Toast.LENGTH_SHORT).show()
-        finish()
     }
 }

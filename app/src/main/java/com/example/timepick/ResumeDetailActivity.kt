@@ -9,29 +9,35 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 
 /**
- ResumeDetailActivity - 이력서 상세 화면
-
-  플로우:
-  - SharedPreferences에서 userId로 이력서 데이터 로드
-  - 이력서 정보 표시 (이름, 소개, 휴대폰, 희망지역, 희망직종, 경력, 학력)
-  - 선택 항목(학력)이 없으면 해당 섹션 숨김
-  - 수정 버튼 -> ResumeEditActivity로 이동
-  - 삭제 버튼 -> 확인 다이얼로그 후 SharedPreferences에서 이력서 삭제
+ * ResumeDetailActivity - 이력서 상세 화면
+ *
+ * 플로우:
+ * - MainViewModel에서 userId로 이력서 데이터 로드
+ * - 이력서 정보 표시 (이름, 소개, 휴대폰, 희망지역, 희망직종, 경력, 학력)
+ * - 선택 항목(학력)이 없으면 해당 섹션 숨김
+ * - 수정 버튼 -> ResumeEditActivity로 이동
+ * - 삭제 버튼 -> 확인 다이얼로그 후 DB에서 이력서 삭제
  */
-
 class ResumeDetailActivity : AppCompatActivity() {
 
+    private lateinit var viewModel: MainViewModel
     private lateinit var btnBack: ImageButton
     private lateinit var btnEdit: Button
     private lateinit var btnDelete: Button
 
-    private var userId: String = ""
+    private var userId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_resume_detail)
+
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+        )[MainViewModel::class.java]
 
         loadUserId()
         initViews()
@@ -39,119 +45,43 @@ class ResumeDetailActivity : AppCompatActivity() {
         setupClickListeners()
     }
 
+    // SharedPreferences에서 userId 로드
     private fun loadUserId() {
         val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
-        userId = sharedPref.getString("USER_ID", "") ?: ""
+        val userIdString = sharedPref.getString("USER_ID", "0") ?: "0"
+        userId = userIdString.toIntOrNull() ?: 0
     }
 
+    // View 초기화
     private fun initViews() {
         btnBack = findViewById(R.id.btn_resume_detail_back)
         btnEdit = findViewById(R.id.btn_resume_edit)
         btnDelete = findViewById(R.id.btn_resume_delete)
     }
 
+    // MainViewModel에서 이력서 데이터 로드
     private fun loadResumeData() {
-        val pref = getSharedPreferences("TimePick_Resume_$userId", MODE_PRIVATE)
-
-        if (!pref.contains("name")) {
-            android.widget.Toast.makeText(this, "이력서가 없습니다.", android.widget.Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-
-        val name = pref.getString("name", "") ?: ""
-        val intro = pref.getString("intro", "") ?: ""
-        val phone = pref.getString("phone", "") ?: ""
-        val location = pref.getString("location", "") ?: ""
-        val job = pref.getString("job", "") ?: ""
-        val career = pref.getString("career", "") ?: ""
-        val education = pref.getString("education", null)
-
-        // ScrollView > LinearLayout 찾기
-        val container = findScrollViewContainer()
-        if (container == null) {
-            android.widget.Toast.makeText(this, "레이아웃을 찾을 수 없습니다.", android.widget.Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // 모든 TextView 찾기
-        val allTextViews = mutableListOf<TextView>()
-        collectAllTextViews(container, allTextViews)
-
-        // 데이터 순서대로 넣기
-        var index = 0
-
-        // 0: 날짜 (건너뛰기)
-        // 1: 이름
-        if (index + 1 < allTextViews.size) {
-            allTextViews[index + 1].text = name
-        }
-
-        // "소개" 라벨 찾기 → 다음 TextView에 intro 넣기
-        for (i in allTextViews.indices) {
-            if (allTextViews[i].text.toString() == "소개") {
-                if (i + 1 < allTextViews.size) {
-                    allTextViews[i + 1].text = intro
-                }
-                break
+        viewModel.loadResume(userId) { resume ->
+            if (resume == null) {
+                android.widget.Toast.makeText(this, "이력서가 없습니다.", android.widget.Toast.LENGTH_SHORT).show()
+                finish()
+                return@loadResume
             }
-        }
 
-        // "휴대폰", "주소", "이메일", "최종 학력", "희망 지역", "희망 직종", "경력사항" 찾아서 넣기
-        for (i in allTextViews.indices) {
-            val text = allTextViews[i].text.toString()
-
-            when (text) {
-                "휴대폰" -> {
-                    if (i + 1 < allTextViews.size) {
-                        allTextViews[i + 1].text = phone
-                    }
-                }
-                "주소" -> {
-                    // 주소는 선택 항목이지만 현재 입력받지 않으므로 숨김
-                    (allTextViews[i].parent as? View)?.visibility = View.GONE
-                }
-                "이메일" -> {
-                    // 이메일도 선택 항목이지만 현재 입력받지 않으므로 숨김
-                    (allTextViews[i].parent as? View)?.visibility = View.GONE
-                }
-                "최종 학력" -> {
-                    if (education.isNullOrBlank()) {
-                        (allTextViews[i].parent as? View)?.visibility = View.GONE
-                    } else {
-                        if (i + 1 < allTextViews.size) {
-                            allTextViews[i + 1].text = education
-                        }
-                    }
-                }
-                "자격 및 능력" -> {
-                    // 자격증도 선택 항목이지만 현재 입력받지 않으므로 숨김
-                    (allTextViews[i].parent as? View)?.visibility = View.GONE
-                }
-                "희망 지역" -> {
-                    if (i + 1 < allTextViews.size) {
-                        allTextViews[i + 1].text = location
-                    }
-                }
-                "희망 직종" -> {
-                    if (i + 1 < allTextViews.size) {
-                        allTextViews[i + 1].text = job
-                    }
-                }
-                "경력사항" -> {
-                    if (i + 1 < allTextViews.size) {
-                        allTextViews[i + 1].text = career
-                    }
-                }
+            val container = findScrollViewContainer()
+            if (container != null) {
+                updateTextViews(container, resume)
             }
         }
     }
 
+    // ScrollView 내부의 LinearLayout 찾기 (재귀)
     private fun findScrollViewContainer(): LinearLayout? {
         val rootView = window.decorView.findViewById<View>(android.R.id.content)
         return findScrollViewRecursive(rootView)
     }
 
+    // ScrollView를 재귀적으로 찾는 헬퍼 함수
     private fun findScrollViewRecursive(view: View): LinearLayout? {
         if (view is android.widget.ScrollView) {
             val child = view.getChildAt(0)
@@ -168,6 +98,37 @@ class ResumeDetailActivity : AppCompatActivity() {
         return null
     }
 
+    // DB 데이터로 TextView 업데이트
+    private fun updateTextViews(container: LinearLayout, resume: com.example.timepick.data.entity.ResumeEntity) {
+        val allTextViews = mutableListOf<TextView>()
+        collectAllTextViews(container, allTextViews)
+
+        for (i in allTextViews.indices) {
+            val tv = allTextViews[i]
+            val text = tv.text.toString()
+
+            when (text) {
+                "김슈니" -> tv.text = resume.name
+                "안녕하세요, 성실한 아르바이트생 김슈니입니다." -> tv.text = resume.intro
+                "010-1234-5678" -> tv.text = resume.phone
+                "서울 노원구" -> tv.text = resume.desiredRegion
+                "베이커리, 카페, 음식점" -> tv.text = resume.desiredJob
+                "대학(4년제)" -> {
+                    if (resume.education.isNullOrBlank()) {
+                        (tv.parent as? View)?.visibility = View.GONE
+                    } else {
+                        tv.text = resume.education
+                    }
+                }
+            }
+
+            if (text == "경력사항" && i + 1 < allTextViews.size) {
+                allTextViews[i + 1].text = resume.career
+            }
+        }
+    }
+
+    // 모든 TextView 수집
     private fun collectAllTextViews(view: View, list: MutableList<TextView>) {
         if (view is TextView) {
             list.add(view)
@@ -178,6 +139,7 @@ class ResumeDetailActivity : AppCompatActivity() {
         }
     }
 
+    // 클릭 리스너 설정
     private fun setupClickListeners() {
         btnBack.setOnClickListener { finish() }
 
@@ -191,6 +153,7 @@ class ResumeDetailActivity : AppCompatActivity() {
         }
     }
 
+    // 이력서 삭제 확인 다이얼로그 표시
     private fun showDeleteConfirmDialog() {
         android.app.AlertDialog.Builder(this)
             .setTitle("이력서 삭제")
@@ -202,11 +165,15 @@ class ResumeDetailActivity : AppCompatActivity() {
             .show()
     }
 
+    // DB에서 이력서 삭제
     private fun deleteResume() {
-        val pref = getSharedPreferences("TimePick_Resume_$userId", MODE_PRIVATE)
-        pref.edit().clear().apply()
-
-        android.widget.Toast.makeText(this, "이력서가 삭제되었습니다.", android.widget.Toast.LENGTH_SHORT).show()
-        finish()
+        viewModel.deleteResume(userId) { success ->
+            if (success) {
+                android.widget.Toast.makeText(this, "이력서가 삭제되었습니다.", android.widget.Toast.LENGTH_SHORT).show()
+                finish()
+            } else {
+                android.widget.Toast.makeText(this, "이력서 삭제에 실패했습니다.", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

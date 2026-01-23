@@ -9,20 +9,22 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 /**
- MyPageActivity
-
- 플로우:
-  - SharedPreferences에서 사용자 정보(이름) 표시
-  - 이력서 존재 여부 확인 -> 있으면 카드 표시, 없으면 + 버튼 표시
-  - 이력서 카드/빈 영역 클릭 -> ResumeDetailActivity 또는 ResumeEditActivity로 이동
-  - 프로필 수정 버튼 -> EditProfileActivity로 이동
+ * MyPageActivity - 마이페이지 화면
+ *
+ * 플로우:
+ * - SharedPreferences에서 사용자 정보(이름) 표시
+ * - MainViewModel로 이력서 존재 여부 확인 -> 있으면 카드 표시, 없으면 + 버튼 표시
+ * - 이력서 카드/빈 영역 클릭 -> ResumeDetailActivity 또는 ResumeEditActivity로 이동
+ * - 프로필 수정 버튼 -> EditProfileActivity로 이동
+ * - 하단 네비게이션 (캘린더=준비중, 홈=타임테이블, 마이페이지=현재화면)
  */
-
 class MyPageActivity : AppCompatActivity() {
 
+    private lateinit var viewModel: MainViewModel
     private lateinit var tvUserName: TextView
     private lateinit var btnEditProfile: TextView
     private lateinit var btnAddResume: ImageButton
@@ -30,12 +32,17 @@ class MyPageActivity : AppCompatActivity() {
     private lateinit var layoutResumeEmpty: LinearLayout
     private lateinit var bottomNav: BottomNavigationView
 
-    private var userId: String = ""
+    private var userId: Int = 0
     private var userName: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_page)
+
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+        )[MainViewModel::class.java]
 
         loadUserInfo()
         initViews()
@@ -46,17 +53,18 @@ class MyPageActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        loadUserInfo()
-        displayUserInfo()
         displayResumeStatus()
     }
 
+    // SharedPreferences에서 사용자 정보 로드
     private fun loadUserInfo() {
         val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
-        userId = sharedPref.getString("USER_ID", "") ?: ""
+        val userIdString = sharedPref.getString("USER_ID", "0") ?: "0"
+        userId = userIdString.toIntOrNull() ?: 0
         userName = sharedPref.getString("USER_NAME", "") ?: ""
     }
 
+    // View 초기화
     private fun initViews() {
         tvUserName = findViewById(R.id.tv_user_name)
         btnEditProfile = findViewById(R.id.btn_edit_profile)
@@ -66,59 +74,46 @@ class MyPageActivity : AppCompatActivity() {
         bottomNav = findViewById(R.id.bottom_navigation)
     }
 
+    // 사용자 이름 표시
     private fun displayUserInfo() {
         tvUserName.text = "${userName}님, 환영합니다."
     }
 
+    // 이력서 존재 여부에 따라 카드/빈 화면 표시
     private fun displayResumeStatus() {
-        val pref = getSharedPreferences("TimePick_Resume_$userId", MODE_PRIVATE)
-        val hasResume = pref.getBoolean("has_resume", false)
-
-        if (hasResume) {
-            // 이력서 있음 → 카드 표시
-            layoutResumeCardContainer.visibility = View.VISIBLE
-            layoutResumeEmpty.visibility = View.GONE
-            btnAddResume.visibility = View.GONE
-            setupResumeCard()
-        } else {
-            // 이력서 없음 → + 버튼 표시
-            layoutResumeCardContainer.visibility = View.GONE
-            layoutResumeEmpty.visibility = View.VISIBLE
-            btnAddResume.visibility = View.VISIBLE
+        viewModel.checkResumeExists(userId) { exists ->
+            if (exists) {
+                layoutResumeCardContainer.visibility = View.VISIBLE
+                layoutResumeEmpty.visibility = View.GONE
+                btnAddResume.visibility = View.GONE
+                setupResumeCard()
+            } else {
+                layoutResumeCardContainer.visibility = View.GONE
+                layoutResumeEmpty.visibility = View.VISIBLE
+                btnAddResume.visibility = View.VISIBLE
+            }
         }
     }
 
+    // 이력서 카드 설정 (클릭 이벤트)
     private fun setupResumeCard() {
         try {
-            // item_resume_card.xml inflate
             layoutResumeCardContainer.removeAllViews()
             val cardView = layoutInflater.inflate(R.layout.item_resume_card, layoutResumeCardContainer, false)
             layoutResumeCardContainer.addView(cardView)
 
-            // 이력서 데이터 표시
-            val pref = getSharedPreferences("TimePick_Resume_$userId", MODE_PRIVATE)
-            val name = pref.getString("name", "") ?: ""
-            val location = pref.getString("location", "") ?: ""
-            val job = pref.getString("job", "") ?: ""
-
-            val tvName = cardView.findViewById<TextView>(R.id.tv_resume_name)
-            val tvLocation = cardView.findViewById<TextView>(R.id.tv_resume_location)
-            val tvCategory = cardView.findViewById<TextView>(R.id.tv_resume_category)
-            val btnDetail = cardView.findViewById<ImageButton>(R.id.btn_resume_detail)
-
-            tvName?.text = name
-            tvLocation?.text = location
-            tvCategory?.text = job
-
-            // 클릭 이벤트
-            val goToDetail = {
-                try {
-                    val intent = Intent(this, ResumeDetailActivity::class.java)
-                    startActivity(intent)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Toast.makeText(this, "오류가 발생했습니다: ${e.message}", Toast.LENGTH_SHORT).show()
+            viewModel.loadResume(userId) { resume ->
+                resume?.let {
+                    cardView.findViewById<TextView>(R.id.tv_resume_name)?.text = it.name
+                    cardView.findViewById<TextView>(R.id.tv_resume_location)?.text = it.desiredRegion
+                    cardView.findViewById<TextView>(R.id.tv_resume_category)?.text = it.desiredJob
                 }
+            }
+
+            val btnDetail = cardView.findViewById<ImageButton>(R.id.btn_resume_detail)
+            val goToDetail = {
+                val intent = Intent(this, ResumeDetailActivity::class.java)
+                startActivity(intent)
             }
 
             cardView.setOnClickListener { goToDetail() }
@@ -130,6 +125,7 @@ class MyPageActivity : AppCompatActivity() {
         }
     }
 
+    // 클릭 리스너 설정
     private fun setupClickListeners() {
         btnEditProfile.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
@@ -147,6 +143,7 @@ class MyPageActivity : AppCompatActivity() {
         }
     }
 
+    // 하단 네비게이션 설정
     private fun setupBottomNavigation() {
         bottomNav.selectedItemId = R.id.nav_mypage
 

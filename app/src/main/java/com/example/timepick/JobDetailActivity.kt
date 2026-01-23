@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.timepick.data.AppDatabase
 import com.example.timepick.data.entity.JobEntity
@@ -18,16 +19,18 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- JobDetailActivity - 공고 상세 화면
-
- 플로우:
-  - Intent로 받은 jobId로 DB에서 공고 상세 정보 조회
-  - 공고의 모든 상세 정보 표시 (급여, 업종, 고용형태, 모집조건, 근무지역, 상세요강)
-  - 이력서 확인 버튼 -> 이력서 있으면 ResumeDetailActivity, 없으면 토스트 + ResumeEditActivity
-  - 지원하기 버튼 -> ApplyCompleteActivity로 이동
+ * JobDetailActivity - 공고 상세 화면
+ *
+ * 플로우:
+ * - Intent로 받은 jobId로 DB에서 공고 상세 정보 조회
+ * - 공고의 모든 상세 정보 표시 (급여, 업종, 고용형태, 모집조건, 근무지역, 상세요강)
+ * - 이미 지원한 공고인지 확인 -> 지원 완료면 버튼 회색 + 비활성화
+ * - 이력서 확인 버튼 -> 이력서 있으면 ResumeDetailActivity, 없으면 토스트 + ResumeEditActivity
+ * - 지원하기 버튼 -> DB에 지원 내역 저장 후 ApplyCompleteActivity로 이동
  */
 class JobDetailActivity : AppCompatActivity() {
 
+    private lateinit var viewModel: MainViewModel
     private lateinit var btnBack: ImageButton
     private lateinit var tvCompanyName: TextView
     private lateinit var mapFragment: View
@@ -36,19 +39,35 @@ class JobDetailActivity : AppCompatActivity() {
     private lateinit var layoutDetailContent: LinearLayout
 
     private var jobId: Int = 0
+    private var userId: Int = 0
     private var currentJob: JobEntity? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_job_detail)
 
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+        )[MainViewModel::class.java]
+
         jobId = intent.getIntExtra("JOB_ID", 0)
+        loadUserId()
         initViews()
         hideMapFragment()
         loadJobDetail()
+        checkIfAlreadyApplied()
         setupClickListeners()
     }
 
+    // SharedPreferences에서 userId 로드
+    private fun loadUserId() {
+        val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
+        val userIdString = sharedPref.getString("USER_ID", "0") ?: "0"
+        userId = userIdString.toIntOrNull() ?: 0
+    }
+
+    // View 초기화
     private fun initViews() {
         btnBack = findViewById(R.id.btn_detail_back)
         tvCompanyName = findViewById(R.id.tv_detail_company_name)
@@ -60,6 +79,7 @@ class JobDetailActivity : AppCompatActivity() {
         layoutDetailContent = findScrollViewContent(rootView) ?: LinearLayout(this)
     }
 
+    // ScrollView 내부의 LinearLayout 찾기
     private fun findScrollViewContent(view: View): LinearLayout? {
         if (view is android.widget.ScrollView) {
             return view.getChildAt(0) as? LinearLayout
@@ -73,10 +93,31 @@ class JobDetailActivity : AppCompatActivity() {
         return null
     }
 
+    // 지도 숨김 처리 (API 미사용)
     private fun hideMapFragment() {
         mapFragment.visibility = View.GONE
     }
 
+    // 이미 지원했는지 확인 후 버튼 비활성화
+    private fun checkIfAlreadyApplied() {
+        viewModel.checkIfApplied(userId, jobId)
+
+        lifecycleScope.launch {
+            viewModel.isAlreadyApplied.collect { isApplied ->
+                if (isApplied) {
+                    btnApply.apply {
+                        text = "지원 완료"
+                        backgroundTintList = android.content.res.ColorStateList.valueOf(
+                            android.graphics.Color.parseColor("#A6AAB3")
+                        )
+                        isEnabled = false
+                    }
+                }
+            }
+        }
+    }
+
+    // DB에서 공고 상세 정보 로드
     private fun loadJobDetail() {
         if (jobId == 0) {
             Toast.makeText(this, "잘못된 공고 정보입니다.", Toast.LENGTH_SHORT).show()
@@ -100,11 +141,13 @@ class JobDetailActivity : AppCompatActivity() {
         }
     }
 
+    // 공고 정보를 화면에 표시
     private fun displayJobInfo(job: JobEntity) {
         tvCompanyName.text = job.title
         updateTextViews(layoutDetailContent, job)
     }
 
+    // 재귀적으로 모든 TextView를 찾아서 DB 데이터로 업데이트
     private fun updateTextViews(parent: ViewGroup, job: JobEntity) {
         for (i in 0 until parent.childCount) {
             val child = parent.getChildAt(i)
@@ -158,6 +201,7 @@ class JobDetailActivity : AppCompatActivity() {
         }
     }
 
+    // 클릭 리스너 설정
     private fun setupClickListeners() {
         btnBack.setOnClickListener {
             finish()
@@ -172,17 +216,15 @@ class JobDetailActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val userId = sharedPref.getString("USER_ID", "") ?: ""
-            val resumePref = getSharedPreferences("TimePick_Resume_$userId", MODE_PRIVATE)
-            val hasResume = resumePref.getBoolean("has_resume", false)
-
-            if (hasResume) {
-                val intent = Intent(this, ResumeDetailActivity::class.java)
-                startActivity(intent)
-            } else {
-                Toast.makeText(this, "이력서를 작성해주세요.", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, ResumeEditActivity::class.java)
-                startActivity(intent)
+            viewModel.checkResumeExists(userId) { hasResume ->
+                if (hasResume) {
+                    val intent = Intent(this, ResumeDetailActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(this, "이력서를 작성해주세요.", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, ResumeEditActivity::class.java)
+                    startActivity(intent)
+                }
             }
         }
 
@@ -191,6 +233,7 @@ class JobDetailActivity : AppCompatActivity() {
         }
     }
 
+    // 지원하기 버튼 클릭 처리
     private fun applyForJob() {
         val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
         val isLoggedIn = sharedPref.getBoolean("IS_LOGGED_IN", false)
@@ -203,6 +246,20 @@ class JobDetailActivity : AppCompatActivity() {
         if (currentJob == null) {
             Toast.makeText(this, "공고 정보를 불러오는 중입니다.", Toast.LENGTH_SHORT).show()
             return
+        }
+
+        // DB에 지원 내역 저장
+        viewModel.applyToJob(userId, jobId)
+
+        Toast.makeText(this, "지원이 완료되었습니다.", Toast.LENGTH_SHORT).show()
+
+        // 버튼 비활성화
+        btnApply.apply {
+            text = "지원 완료"
+            backgroundTintList = android.content.res.ColorStateList.valueOf(
+                android.graphics.Color.parseColor("#A6AAB3")
+            )
+            isEnabled = false
         }
 
         val intent = Intent(this, ApplyCompleteActivity::class.java)
