@@ -13,12 +13,15 @@ import com.example.timepick.data.entity.JobEntity
 import com.example.timepick.data.entity.JobTimeEntity
 import com.example.timepick.data.entity.UserTimeEntity
 import com.example.timepick.data.dao.AppliedJobDao
+import com.example.timepick.data.dao.ResumeDao
 import com.example.timepick.data.entity.AppliedJobEntity
+import com.example.timepick.data.entity.ResumeEntity
 
 
 @Database(
-    entities = [UserEntity::class, UserTimeEntity::class, JobEntity::class, JobTimeEntity::class, AppliedJobEntity::class ],
-    version = 3
+    entities = [UserEntity::class, UserTimeEntity::class, JobEntity::class, JobTimeEntity::class, AppliedJobEntity::class,
+        ResumeEntity::class],
+    version = 4
 )
 
 abstract class AppDatabase : RoomDatabase() {
@@ -27,6 +30,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun jobDao(): JobDao
     abstract fun jobTimeDao(): JobTimeDao
     abstract fun appliedJobDao(): AppliedJobDao
+    abstract fun resumeDao(): ResumeDao
 
     companion object {
         @Volatile
