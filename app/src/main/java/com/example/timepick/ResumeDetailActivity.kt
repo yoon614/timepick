@@ -12,14 +12,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 
 /**
- * ResumeDetailActivity - 이력서 상세 화면
- *
- * 플로우:
- * - MainViewModel에서 userId로 이력서 데이터 로드
- * - 이력서 정보 표시 (이름, 소개, 휴대폰, 희망지역, 희망직종, 경력, 학력)
- * - 선택 항목(학력)이 없으면 해당 섹션 숨김
- * - 수정 버튼 -> ResumeEditActivity로 이동
- * - 삭제 버튼 -> 확인 다이얼로그 후 DB에서 이력서 삭제
+ ResumeDetailActivity - 이력서 상세 화면
+
+ 플로우:
+  - MainViewModel에서 userId로 이력서 데이터 로드
+  - 이력서 정보 표시 (이름, 소개, 휴대폰, 희망지역, 희망직종, 경력, 학력)
+  - 선택 항목(학력)이 없으면 해당 섹션 숨김
+  - 수정 버튼 -> ResumeEditActivity로 이동
+  - 삭제 버튼 -> 확인 다이얼로그 후 DB에서 이력서 삭제
  */
 class ResumeDetailActivity : AppCompatActivity() {
 

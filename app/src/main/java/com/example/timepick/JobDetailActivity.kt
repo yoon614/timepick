@@ -19,14 +19,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * JobDetailActivity - 공고 상세 화면
- *
- * 플로우:
- * - Intent로 받은 jobId로 DB에서 공고 상세 정보 조회
- * - 공고의 모든 상세 정보 표시 (급여, 업종, 고용형태, 모집조건, 근무지역, 상세요강)
- * - 이미 지원한 공고인지 확인 -> 지원 완료면 버튼 회색 + 비활성화
- * - 이력서 확인 버튼 -> 이력서 있으면 ResumeDetailActivity, 없으면 토스트 + ResumeEditActivity
- * - 지원하기 버튼 -> DB에 지원 내역 저장 후 ApplyCompleteActivity로 이동
+ JobDetailActivity - 공고 상세 화면
+
+ 플로우:
+  - Intent로 받은 jobId로 DB에서 공고 상세 정보 조회
+  - 공고의 모든 상세 정보 표시 (급여, 업종, 고용형태, 모집조건, 근무지역, 상세요강)
+  - 이미 지원한 공고인지 확인 -> 지원 완료면 버튼 회색 + 비활성화
+  - 이력서 확인 버튼 -> 이력서 있으면 ResumeDetailActivity, 없으면 토스트 + ResumeEditActivity
+  - 지원하기 버튼 -> DB에 지원 내역 저장 후 ApplyCompleteActivity로 이동
  */
 class JobDetailActivity : AppCompatActivity() {
 
