@@ -1,7 +1,9 @@
 package com.example.timepick
 
 import android.content.Intent
+import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -14,26 +16,33 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.timepick.data.AppDatabase
 import com.example.timepick.data.entity.JobEntity
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 
 /**
- JobDetailActivity - 공고 상세 화면
+JobDetailActivity - 공고 상세 화면
 
- 플로우:
-  - Intent로 받은 jobId로 DB에서 공고 상세 정보 조회
-  - 공고의 모든 상세 정보 표시 (급여, 업종, 고용형태, 모집조건, 근무지역, 상세요강)
-  - 이미 지원한 공고인지 확인 -> 지원 완료면 버튼 회색 + 비활성화
-  - 이력서 확인 버튼 -> 이력서 있으면 ResumeDetailActivity, 없으면 토스트 + ResumeEditActivity
-  - 지원하기 버튼 -> DB에 지원 내역 저장 후 ApplyCompleteActivity로 이동
+플로우:
+- Intent로 받은 jobId로 DB에서 공고 상세 정보 조회
+- 공고의 모든 상세 정보 표시 (급여, 업종, 고용형태, 모집조건, 근무지역, 상세요강)
+- 이미 지원한 공고인지 확인 -> 지원 완료면 버튼 회색 + 비활성화
+- 이력서 확인 버튼 -> 이력서 있으면 ResumeDetailActivity, 없으면 토스트 + ResumeEditActivity
+- 지원하기 버튼 -> DB에 지원 내역 저장 후 ApplyCompleteActivity로 이동
+- 구글 지도 API 연동 (OnMapReadyCallback 구현)
  */
-class JobDetailActivity : AppCompatActivity() {
+class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var btnBack: ImageButton
     private lateinit var tvCompanyName: TextView
-    private lateinit var mapFragment: View
     private lateinit var btnResume: Button
     private lateinit var btnApply: Button
     private lateinit var layoutDetailContent: LinearLayout
@@ -41,6 +50,9 @@ class JobDetailActivity : AppCompatActivity() {
     private var jobId: Int = 0
     private var userId: Int = 0
     private var currentJob: JobEntity? = null
+
+    // 구글 맵 객체
+    private var googleMap: GoogleMap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +66,7 @@ class JobDetailActivity : AppCompatActivity() {
         jobId = intent.getIntExtra("JOB_ID", 0)
         loadUserId()
         initViews()
-        hideMapFragment()
+        initMap()
         loadJobDetail()
         checkIfAlreadyApplied()
         setupClickListeners()
@@ -71,12 +83,61 @@ class JobDetailActivity : AppCompatActivity() {
     private fun initViews() {
         btnBack = findViewById(R.id.btn_detail_back)
         tvCompanyName = findViewById(R.id.tv_detail_company_name)
-        mapFragment = findViewById(R.id.map_fragment)
         btnResume = findViewById(R.id.btn_detail_resume)
         btnApply = findViewById(R.id.btn_detail_apply)
 
         val rootView = findViewById<View>(android.R.id.content)
         layoutDetailContent = findScrollViewContent(rootView) ?: LinearLayout(this)
+    }
+
+    // 지도 프래그먼트 초기화 및 로딩
+    private fun initMap() {
+        val mapFragment = supportFragmentManager
+            .findFragmentById(R.id.map_fragment) as? SupportMapFragment
+        mapFragment?.getMapAsync(this)
+    }
+
+    // 지도가 준비되면 호출되는 콜백 (OnMapReadyCallback)
+    override fun onMapReady(map: GoogleMap) {
+        googleMap = map
+
+        // 지도가 준비되었는데 데이터도 이미 로드된 상태라면 마커 표시
+        currentJob?.let { job ->
+            updateMapLocation(job.address, job.title)
+        }
+    }
+
+    // 주소를 좌표로 변환하여 지도 이동 및 마커 표시
+    private fun updateMapLocation(address: String, title: String) {
+        if (googleMap == null) return
+
+        // 네트워크 작업(Geocoding)은 백그라운드 스레드에서 수행
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val geocoder = Geocoder(this@JobDetailActivity)
+                // 주소로 좌표 찾기 (최대 1개 결과)
+                @Suppress("DEPRECATION")
+                val addresses = geocoder.getFromLocationName(address, 1)
+
+                if (!addresses.isNullOrEmpty()) {
+                    val location = addresses[0]
+                    val latLng = LatLng(location.latitude, location.longitude)
+
+                    // UI 업데이트(지도 이동)는 메인 스레드에서 수행
+                    withContext(Dispatchers.Main) {
+                        googleMap?.apply {
+                            clear() // 기존 마커 지우기
+                            addMarker(MarkerOptions().position(latLng).title(title))
+                            moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f)) // 줌 레벨 16
+                        }
+                    }
+                } else {
+                    Log.e("JobDetailActivity", "주소를 찾을 수 없습니다: $address")
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
     }
 
     // ScrollView 내부의 LinearLayout 찾기
@@ -91,11 +152,6 @@ class JobDetailActivity : AppCompatActivity() {
             }
         }
         return null
-    }
-
-    // 지도 숨김 처리 (API 미사용)
-    private fun hideMapFragment() {
-        mapFragment.visibility = View.GONE
     }
 
     // 이미 지원했는지 확인 후 버튼 비활성화
@@ -145,6 +201,9 @@ class JobDetailActivity : AppCompatActivity() {
     private fun displayJobInfo(job: JobEntity) {
         tvCompanyName.text = job.title
         updateTextViews(layoutDetailContent, job)
+
+        // 공고 정보 로드 완료 시 지도 위치 업데이트
+        updateMapLocation(job.address, job.title)
     }
 
     // 재귀적으로 모든 TextView를 찾아서 DB 데이터로 업데이트
