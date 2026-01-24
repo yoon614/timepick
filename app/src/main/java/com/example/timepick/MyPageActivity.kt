@@ -23,7 +23,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
  * - 이력서 카드/빈 영역 클릭 -> ResumeDetailActivity 또는 ResumeEditActivity로 이동
  * - 프로필 수정 버튼 -> EditProfileActivity로 이동
  * - 더보기 버튼 -> 회원탈퇴/로그아웃 메뉴 표시
- * - 하단 네비게이션 (캘린더=준비중, 홈=타임테이블, 마이페이지=현재화면)
+ * - 하단 네비게이션 (캘린더, 홈=타임테이블, 마이페이지=현재화면)
  */
 class MyPageActivity : AppCompatActivity() {
 
@@ -250,7 +250,10 @@ class MyPageActivity : AppCompatActivity() {
         bottomNav.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_calendar -> {
-                    Toast.makeText(this@MyPageActivity, "캘린더 기능은 준비 중입니다.", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this@MyPageActivity, CalendarActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    startActivity(intent)
+                    finish()
                     true
                 }
                 R.id.nav_home -> {
