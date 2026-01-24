@@ -16,9 +16,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import com.example.timepick.data.entity.AppliedJobEntity
 import com.example.timepick.data.entity.ResumeEntity
+import com.example.timepick.data.entity.WorkScheduleEntity
 import java.util.Locale
 import java.util.Date
 import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalTime
+import kotlin.collections.forEach
 
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -47,6 +52,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // 사용자가 특정 공고에 지원했는지 상태를 저장할 변수
     private val _isAlreadyApplied = MutableStateFlow<Boolean>(false)
     val isAlreadyApplied: StateFlow<Boolean> = _isAlreadyApplied
+    private val workScheduleDao = database.workScheduleDao()
 
     // UI에 출력할 정보를 담는 클래스
     data class JobMatchResult(
@@ -476,5 +482,111 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /* ---------- 일정 저장 ---------- */
+    fun saveWorkSchedule(schedule: WorkScheduleEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (schedule.isWeeklyFixed) {
+                val schedules = mutableListOf<WorkScheduleEntity>()
+                val groupId = System.currentTimeMillis() // 이번에 생성되는 52개 일정의 공통 ID
+                val startDate = LocalDate.parse(schedule.workDate)
+
+                for (i in 0 until 52) { // 1년치 반복
+                    val targetDate = startDate.plusWeeks(i.toLong()).toString()
+                    schedules.add(
+                        schedule.copy(
+                            id = 0, // 새 ID 생성을 위해 0으로 설정
+                            workDate = targetDate,
+                            groupId = groupId
+                        )
+                    )
+                }
+                workScheduleDao.insertSchedules(schedules)
+            } else {
+                // 단일 일정 저장 (id가 0이 아니면 기존 데이터 수정으로 작동)
+                workScheduleDao.insertSchedule(schedule)
+            }
+        }
+    }
+    /* ---------- 월급 계산 및 야간 수당 로직 ---------- */
+    fun calculateMonthlySalary(schedules: List<WorkScheduleEntity>): Double {
+        var totalPay = 0.0
+        schedules.forEach { schedule ->
+            val start = LocalTime.parse(schedule.startTime)
+            val end = LocalTime.parse(schedule.endTime)
+
+            // 총 근무 시간 계산
+            var duration = Duration.between(start, end).toMinutes()
+            if (duration < 0) duration += 24 * 60 // 자정을 넘기는 경우 (예: 22:00 ~ 02:00)
+
+            // 1. 기본 급여
+            var dailyPay = (duration / 60.0) * schedule.hourlyRate
+
+            // 2. 야간 수당 계산 (22:00 ~ 06:00) 50% 가산
+            val nightMinutes = calculateNightMinutes(start, duration)
+            dailyPay += (nightMinutes / 60.0) * (schedule.hourlyRate * 0.5)
+
+            // 3. 세금 3.3% 공제
+            if (schedule.applyTax) {
+                dailyPay *= 0.967
+            }
+            totalPay += dailyPay
+        }
+        return totalPay
+    }
+
+    // 야간 근무 시간(분)만 따로 계산하는 보조 함수 (22:00 ~ 06:00)
+    private fun calculateNightMinutes(start: LocalTime, totalDurationMinutes: Long): Long {
+        var nightMinutes = 0L
+        var currentTime = start
+
+        for (i in 0 until totalDurationMinutes) {
+            val hour = currentTime.hour
+            // 22시 이후거나 06시 이전이면 야간 수당 대상
+            if (hour >= 22 || hour < 6) {
+                nightMinutes++
+            }
+            currentTime = currentTime.plusMinutes(1)
+        }
+        return nightMinutes
+    }
+    // 특정 날짜의 일정 리스트 (달력에서 날짜 클릭 시 사용)
+    private val _selectedDateSchedules = MutableStateFlow<List<WorkScheduleEntity>>(emptyList())
+    val selectedDateSchedules: StateFlow<List<WorkScheduleEntity>> = _selectedDateSchedules
+
+    fun loadSchedulesByDate(userId: Int, date: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val schedules = workScheduleDao.getSchedulesByDate(userId, date)
+            _selectedDateSchedules.value = schedules
+        }
+    }
+
+    // 특정 월의 모든 일정 (월급 계산용)
+    fun loadMonthlySchedules(userId: Int, yearMonth: String, onResult: (List<WorkScheduleEntity>) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            // "2024-05" 형식으로 검색하여 해당 월의 모든 데이터를 가져오는 로직 (DAO에 추가 필요)
+            val schedules = workScheduleDao.getSchedulesByMonth(userId, "$yearMonth%")
+            withContext(Dispatchers.Main) {
+                onResult(schedules)
+            }
+        }
+    }
+
+    fun deleteWorkSchedule(schedule: WorkScheduleEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            workScheduleDao.deleteSchedule(schedule)
+            // 삭제 후 현재 리스트 갱신
+            loadSchedulesByDate(schedule.userId, schedule.workDate)
+        }
+    }
+
+    // 특정 날짜의 일정 불러오기 (달력 클릭 시 리스트 갱신용)
+    fun getSchedulesByDate(userId: Int, date: String, onResult: (List<WorkScheduleEntity>) -> Unit) {
+        viewModelScope.launch {
+            val list = withContext(Dispatchers.IO) {
+                workScheduleDao.getSchedulesByDate(userId, date)
+            }
+            onResult(list)
+        }
+    }
 }
 
