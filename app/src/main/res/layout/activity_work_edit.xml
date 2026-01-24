@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 근무 일정 수정 화면 전체 레이아웃 -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F7F8F9"
+    tools:context=".WorkEditActivity">
+
+    <!-- 상단 툴바 영역 배경 -->
+    <View
+        android:id="@+id/view_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:background="#FFFFFF"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 뒤로가기 버튼 -->
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="30dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="뒤로가기"
+        android:padding="12dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_back_arrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 화면 타이틀 -->
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="근무일정"
+        android:textColor="#333333"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/btn_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btn_back" />
+
+    <!-- 입력 폼 전체를 감싸는 스크롤 영역 -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:paddingHorizontal="25dp"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@id/layout_footer"
+        app:layout_constraintTop_toBottomOf="@id/view_top_bar"
+        app:layout_constraintVertical_bias="1.0">
+
+        <!-- 입력 항목들을 세로로 배치 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
+
+            <!-- 근무지 타이틀 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="근무지"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <!-- 근무지 입력 영역 -->
+            <EditText
+                android:id="@+id/et_place"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_input_field"
+                android:elevation="4dp"
+                android:hint="근무지"
+                android:inputType="text"
+                android:outlineProvider="background"
+                android:paddingHorizontal="14dp"
+                android:textColor="#191F28"
+                android:textColorHint="#B0B8C1"
+                android:textSize="16sp" />
+
+            <!-- 근무지 입력 오류 메시지 -->
+            <TextView
+                android:id="@+id/tv_place_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="8dp"
+                android:text="근무지는 필수 항목입니다. 근무지를 입력해주세요."
+                android:textColor="#777D88"
+                android:textSize="10sp"
+                android:visibility="gone" />
+
+            <!-- 근무시간 타이틀 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="10dp"
+                android:text="근무시간"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <!-- 근무시간 입력 영역 -->
+            <LinearLayout
+                android:id="@+id/layout_time_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <!-- 시작 시간 입력 -->
+                <TextView
+                    android:id="@+id/tv_start_hour"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_mininput_field"
+                    android:elevation="4dp"
+                    android:gravity="center"
+                    android:outlineProvider="background"
+                    android:hint="00"
+                    android:textColor="#191F28"
+                    android:textColorHint="#B0B8C1"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:text=":"
+                    android:textColor="#B0B8C1"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_start_minute"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_mininput_field"
+                    android:elevation="4dp"
+                    android:gravity="center"
+                    android:outlineProvider="background"
+                    android:hint="00"
+                    android:textColor="#191F28"
+                    android:textColorHint="#B0B8C1"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:text="~"
+                    android:textColor="#B0B8C1"
+                    android:textStyle="bold" />
+
+                <!-- 종료 시간 입력 -->
+                <TextView
+                    android:id="@+id/tv_end_hour"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_mininput_field"
+                    android:elevation="4dp"
+                    android:gravity="center"
+                    android:outlineProvider="background"
+                    android:hint="00"
+                    android:textColor="#191F28"
+                    android:textColorHint="#B0B8C1"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:text=":"
+                    android:textStyle="bold"
+                    android:textColor="#B0B8C1" />
+
+                <TextView
+                    android:id="@+id/tv_end_minute"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_mininput_field"
+                    android:elevation="4dp"
+                    android:gravity="center"
+                    android:outlineProvider="background"
+                    android:hint="00"
+                    android:textColor="#191F28"
+                    android:textColorHint="#B0B8C1"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- 근무시간 입력 오류 메시지 -->
+            <TextView
+                android:id="@+id/tv_time_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="8dp"
+                android:text="근무시간은 필수 항목입니다. 근무시간을 선택해주세요."
+                android:textColor="#777D88"
+                android:textSize="10sp"
+                android:visibility="gone" />
+
+            <!-- 시급 타이틀 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="10dp"
+                android:text="시급"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <!-- 시급 입력 영역 -->
+            <EditText
+                android:id="@+id/et_wage"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_input_field"
+                android:elevation="4dp"
+                android:hint="10,000"
+                android:inputType="numberDecimal"
+                android:outlineProvider="background"
+                android:paddingHorizontal="16dp"
+                android:textColor="#191F28"
+                android:textColorHint="#B0B8C1"
+                android:textSize="14sp" />
+
+            <!-- 시급 입력 오류 메시지 -->
+            <TextView
+                android:id="@+id/tv_wage_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="8dp"
+                android:text="시급은 필수 항목입니다. 시급을 입력해주세요."
+                android:textColor="#777D88"
+                android:textSize="10sp"
+                android:visibility="gone" />
+
+            <!-- 야간수당 안내 문구 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:lineSpacingExtra="4dp"
+                android:text="* 오후 10시부터 다음 날 오전 6시 사이의 근로에 대해 통상시급의 50%를 가산하여 지급받는 수당을 자동으로 계산합니다."
+                android:textColor="#8B95A1"
+                android:textSize="9sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- 하단 고정 영역 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- 매주 반복 근무 체크박스 -->
+        <CheckBox
+            android:id="@+id/cb_repeat_weekly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp"
+            android:button="@null"
+            android:drawableEnd="@drawable/selector_checkbox_custom"
+            android:drawablePadding="8dp"
+            android:text="매주 고정 근무일정 "
+            android:textColor="#777D88"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@id/btn_complete"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- 완료 버튼 -->
+        <Button
+            android:id="@+id/btn_complete"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:backgroundTint="#0068FF"
+            android:text="완료"
+            android:textColor="#F7F8F9"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
