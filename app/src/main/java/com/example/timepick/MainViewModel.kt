@@ -482,6 +482,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /*---------------- 캘린더 기능 ------------- */
     /* ---------- 일정 저장 ---------- */
     fun saveWorkSchedule(schedule: WorkScheduleEntity) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -507,8 +508,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
     /* ---------- 월급 계산 및 야간 수당 로직 ---------- */
-    fun calculateMonthlySalary(schedules: List<WorkScheduleEntity>): Double {
+    fun calculateMonthlySalary(schedules: List<WorkScheduleEntity>, applyTaxGlobal: Boolean): Double {
         var totalPay = 0.0
         schedules.forEach { schedule ->
             val start = LocalTime.parse(schedule.startTime)
@@ -516,7 +518,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             // 총 근무 시간 계산
             var duration = Duration.between(start, end).toMinutes()
-            if (duration < 0) duration += 24 * 60 // 자정을 넘기는 경우 (예: 22:00 ~ 02:00)
+            if (duration < 0) duration += 24 * 60 // 자정을 넘기는 경우
 
             // 1. 기본 급여
             var dailyPay = (duration / 60.0) * schedule.hourlyRate
@@ -525,13 +527,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val nightMinutes = calculateNightMinutes(start, duration)
             dailyPay += (nightMinutes / 60.0) * (schedule.hourlyRate * 0.5)
 
-            // 3. 세금 3.3% 공제
-            if (schedule.applyTax) {
-                dailyPay *= 0.967
-            }
             totalPay += dailyPay
         }
-        return totalPay
+
+        // 3. 최종 계산된 월급에서 UI의 세금 체크박스 상태에 따라 3.3% 공제
+        return if (applyTaxGlobal) {
+            totalPay * 0.967 // 3.3% 제외한 금액
+        } else {
+            totalPay // 세금 포함 전액
+        }
     }
 
     // 야간 근무 시간(분)만 따로 계산하는 보조 함수 (22:00 ~ 06:00)
@@ -549,6 +553,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
         return nightMinutes
     }
+
     // 특정 날짜의 일정 리스트 (달력에서 날짜 클릭 시 사용)
     private val _selectedDateSchedules = MutableStateFlow<List<WorkScheduleEntity>>(emptyList())
     val selectedDateSchedules: StateFlow<List<WorkScheduleEntity>> = _selectedDateSchedules
