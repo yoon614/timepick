@@ -93,6 +93,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tv_worker_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="아르바이트생"
@@ -101,6 +102,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tv_worker_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -150,6 +152,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tv_boss_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="사장님"
@@ -158,6 +161,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tv_boss_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
