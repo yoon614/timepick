@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 근무시간 선택에 사용되는 기본 배경 drawable -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#FFFFFF"/>
+    <corners android:radius="12dp"/>
+    <stroke
+        android:width="1dp"
+        android:color="#E1E1E1"/>
+
+</shape>

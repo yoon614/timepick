@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TimePick">
         <activity
+            android:name=".WorkEditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CalendarActivity"
+            android:exported="false" />
+        <activity
             android:name=".EditProfileActivity"
             android:exported="false" />
         <activity

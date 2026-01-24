@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 캘린더 날짜 셀에 표시되는 근무 시간 배지 -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tv_badge_item"
+    android:layout_width="wrap_content"
+    android:layout_height="14dp"
+    android:layout_marginTop="13dp"
+    android:background="@drawable/bg_badge_blue"
+    android:gravity="center"
+    android:includeFontPadding="false"
+    android:text="8시간"
+    android:textColor="#FFFFFF"
+    android:textSize="8sp" />
