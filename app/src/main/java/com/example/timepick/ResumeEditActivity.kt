@@ -162,7 +162,8 @@ class ResumeEditActivity : AppCompatActivity() {
             address = null,
             email = null,
             education = selectedEducation,
-            skills = null
+            skills = null,
+            updatedDate = null
         )
 
         viewModel.saveResume(resume) { success ->

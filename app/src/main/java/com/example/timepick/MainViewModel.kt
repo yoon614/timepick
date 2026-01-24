@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import com.example.timepick.data.entity.AppliedJobEntity
 import com.example.timepick.data.entity.ResumeEntity
+import java.util.Locale
+import java.util.Date
+import java.text.SimpleDateFormat
 
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -209,12 +212,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /** 이력서 저장 (insert + update 통합 함수)
      * - 최초 작성 1회 = insert
      * - 이후 수정 = userId 존재할 경우 REPLACE
+     * - resume 객체를 기반으로 updatedDate를 현재 날짜로 반영한 새 객체 생성
     */
     fun saveResume(resume: ResumeEntity, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
+                // resume 객체에 작성일자를 포함한 resumeToSave 객체 생성
+                val resumeToSave = resume.copy(
+                    updatedDate = getCurrentDate()
+                )
                 withContext(Dispatchers.IO) {
-                    resumeDao.insertResume(resume)
+                    resumeDao.insertResume(resumeToSave)
                 }
                 onResult(true)
             } catch (e: Exception) {
@@ -235,6 +243,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 onResult(false)
             }
         }
+    }
+
+    // 이력서 추가, 수정 시 날짜 저장
+    private fun getCurrentDate(): String {
+        val formatter = SimpleDateFormat("yyyy.MM.dd", Locale.KOREA)
+        return formatter.format(Date())
     }
 
     // 이력서 존재 여부 확인 (true 반환: 추가 / false 반환: 수정)

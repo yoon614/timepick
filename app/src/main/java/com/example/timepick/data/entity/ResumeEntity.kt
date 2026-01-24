@@ -36,6 +36,9 @@ data class ResumeEntity(
     val address: String?,
     val email: String?,
     val education: String?,
-    val skills: String?
+    val skills: String?,
+
+    // 자동 저장 값
+    val updatedDate: String?
 
 )
