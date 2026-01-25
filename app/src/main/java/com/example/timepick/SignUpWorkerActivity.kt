@@ -124,7 +124,11 @@ class SignUpWorkerActivity : AppCompatActivity() {
                 val pw = etPw.text.toString()
                 val pwConfirm = s.toString()
 
-                if (pwConfirm.isNotEmpty() && !viewModel.doPasswordMatch(pw, pwConfirm)) {
+                if (pwConfirm.isEmpty()) {
+                    tvPwConfirmError.text = "비밀번호 확인을 입력해주세요."
+                    tvPwConfirmError.visibility = View.VISIBLE
+                } else if (!viewModel.doPasswordMatch(pw, pwConfirm)) {
+                    tvPwConfirmError.text = "비밀번호가 일치하지 않습니다."
                     tvPwConfirmError.visibility = View.VISIBLE
                 } else {
                     tvPwConfirmError.visibility = View.GONE
