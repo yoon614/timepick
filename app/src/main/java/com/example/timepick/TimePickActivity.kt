@@ -13,13 +13,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 
 /**
- TimePickActivity
+TimePickActivity
 
- 플로우:
-  - 요일별(월~일), 시간대별(오전 8시~오후 10시) 타임 테이블 표시
-  - 타임 슬롯 클릭 -> 선택/해제 토글
-  - SharedPreferences에서 이전 선택 데이터 로드 (userId별 분리)
-  - 저장 버튼 -> DB에 선택한 타임 저장
+플로우:
+- 요일별(월~일), 시간대별(오전 8시~오후 10시) 타임 테이블 표시
+- 타임 슬롯 클릭 -> 선택/해제 토글
+- SharedPreferences에서 이전 선택 데이터 로드 (userId별 분리)
+- 저장 버튼 -> DB에 선택한 타임 저장
  */
 
 class TimePickActivity : AppCompatActivity() {
@@ -178,8 +178,10 @@ class TimePickActivity : AppCompatActivity() {
         bottomNav.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_calendar -> {
-                    // 캘린더는 아직 미구현
-                    Toast.makeText(this@TimePickActivity, "캘린더 기능은 준비 중입니다.", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this@TimePickActivity, CalendarActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    startActivity(intent)
+                    finish()
                     true
                 }
                 R.id.nav_home -> {

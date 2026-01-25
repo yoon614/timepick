@@ -14,14 +14,17 @@ import com.example.timepick.data.entity.JobTimeEntity
 import com.example.timepick.data.entity.UserTimeEntity
 import com.example.timepick.data.dao.AppliedJobDao
 import com.example.timepick.data.dao.ResumeDao
+import com.example.timepick.data.dao.WorkScheduleDao
 import com.example.timepick.data.entity.AppliedJobEntity
 import com.example.timepick.data.entity.ResumeEntity
+import com.example.timepick.data.entity.WorkScheduleEntity
+
 
 
 @Database(
-    entities = [UserEntity::class, UserTimeEntity::class, JobEntity::class, JobTimeEntity::class, AppliedJobEntity::class,
-        ResumeEntity::class],
-    version = 4
+    entities = [UserEntity::class, UserTimeEntity::class, JobEntity::class, JobTimeEntity::class,
+        AppliedJobEntity::class, ResumeEntity::class, WorkScheduleEntity::class],
+    version = 5
 )
 
 abstract class AppDatabase : RoomDatabase() {
@@ -31,6 +34,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun jobTimeDao(): JobTimeDao
     abstract fun appliedJobDao(): AppliedJobDao
     abstract fun resumeDao(): ResumeDao
+    abstract fun workScheduleDao(): WorkScheduleDao
+
 
     companion object {
         @Volatile
