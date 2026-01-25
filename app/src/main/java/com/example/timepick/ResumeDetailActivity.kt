@@ -43,8 +43,38 @@ class ResumeDetailActivity : AppCompatActivity() {
 
         loadUserId()
         initViews()
+
+        // 데이터 로드 전까지 ScrollView 숨기기
+        hideScrollView()
+
         loadResumeData()
         setupClickListeners()
+    }
+
+    // ScrollView 숨기기
+    private fun hideScrollView() {
+        findScrollView()?.visibility = View.INVISIBLE
+    }
+
+    // ScrollView 보이기
+    private fun showScrollView() {
+        findScrollView()?.visibility = View.VISIBLE
+    }
+
+    // ScrollView 찾기
+    private fun findScrollView(): android.widget.ScrollView? {
+        return findScrollViewInView(window.decorView)
+    }
+
+    private fun findScrollViewInView(view: View): android.widget.ScrollView? {
+        if (view is android.widget.ScrollView) return view
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) {
+                val found = findScrollViewInView(view.getChildAt(i))
+                if (found != null) return found
+            }
+        }
+        return null
     }
 
     private fun loadUserId() {
@@ -82,6 +112,8 @@ class ResumeDetailActivity : AppCompatActivity() {
                     // 강제로 레이아웃 다시 그리기
                     container.requestLayout()
                     container.invalidate()
+                    // 업데이트 완료 후 ScrollView 보이기
+                    showScrollView()
                     android.util.Log.d("ResumeDetail", "UI updated successfully")
                 } else {
                     android.util.Log.e("ResumeDetail", "Container is null!")
@@ -214,7 +246,7 @@ class ResumeDetailActivity : AppCompatActivity() {
             }
         }
 
-        // 찾은 TextView들에 데이터 설정
+        // 찾은 TextViews에 데이터 설정
         dateTextView?.text = resume.updatedDate ?: getCurrentDate()
         nameTextView?.text = resume.name
         introTextView?.text = resume.intro
