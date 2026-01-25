@@ -203,30 +203,35 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         updateMapLocation(job.address, job.title)
     }*/
 
-    // 공고 정보를 화면에 표시 (중복된 함수 중 하나를 지우고 이 내용으로 통일하세요)
+    // 공고 정보를 화면에 표시
     private fun displayJobInfo(job: JobEntity) {
         tvCompanyName.text = job.title
-
-        // 1. 기존의 재귀 함수 호출 (상세 내용 업데이트)
         updateTextViews(layoutDetailContent, job)
 
-        // 2. timeContainer(일정 부분)를 직접 업데이트 ("일정을 불러오는 중.." 해결)
         timeContainer?.let { container ->
-            container.removeAllViews() // 기존 "불러오는 중" 메시지 삭제
+            for (i in 0 until container.childCount) {
+                val rowLayout = container.getChildAt(i) as? ViewGroup ?: continue
 
-            val timeTextView = TextView(this).apply {
-                text = "근무 기간: ${job.workPeriod}\n근무 시간: ${job.workTime}"
-                textSize = 16f
-                setTextColor(android.graphics.Color.BLACK) // 글자색 지정
-                setPadding(0, 10, 0, 10)
+                if (rowLayout.childCount >= 2) {
+                    val labelView = rowLayout.getChildAt(0) as? TextView
+                    val valueView = rowLayout.getChildAt(1) as? TextView
+
+                    val labelText = labelView?.text?.toString() ?: ""
+
+                    when {
+                        labelText.contains("요일") -> {
+                            valueView?.text = job.workPeriod
+                        }
+                        labelText.contains("시간") -> {
+                            valueView?.text = job.workTime
+                        }
+                    }
+                }
             }
-            container.addView(timeTextView)
         }
 
         updateMapLocation(job.address, job.title)
     }
-
-
 
     // 재귀적으로 모든 TextView를 찾아서 DB 데이터로 업데이트
     private fun updateTextViews(parent: ViewGroup, job: JobEntity) {
@@ -257,8 +262,8 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                     label.contains("학력") -> child.text = job.education
                                     label.contains("우대") -> child.text = job.preferences
 
-                                    label.contains("요일") || label.contains("기간") -> child.text = job.workPeriod
-                                    label.contains("시간") -> child.text = job.workTime
+                                    /*label.contains("요일") || label.contains("기간") -> child.text = job.workPeriod
+                                    label.contains("시간") -> child.text = job.workTime*/
 
                                     else -> child.text = job.address
                                 }
