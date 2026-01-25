@@ -290,7 +290,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     preferences = "인근 거주자, 보건증 소지자",
                     location = "노원구",
                     address = "서울특별서 노원구 상계동 123-4",
-                    description = "오전 타임 빵 진열과 계산 도와주실 성실한 분을 찾습니다."
+                    description = "오전 타임 빵 진열과 계산 도와주실 성실한 분을 찾습니다.",
+                    workPeriod = "월, 화, 수, 목, 금",
+                    workTime = "07:00 ~ 11:00"
                 ),
                 JobEntity(
                     title = "스타벅스 공릉DT점",
@@ -304,7 +306,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     preferences = "관련 업무 경험자 우대",
                     location = "노원구",
                     address = "서울특별시 노원구 화랑로 456",
-                    description = "함께 즐겁게 일할 바리스타 분들을 모집합니다."
+                    description = "함께 즐겁게 일할 바리스타 분들을 모집합니다.",
+                    workPeriod = "월, 화, 수, 목, 금",
+                    workTime = "12:00 ~ 16:00"
                 ),
                 JobEntity(
                     title = "맥도날드 강남삼성점",
@@ -318,7 +322,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     preferences = "보건증 소지자, 장기 근무 가능자 우대",
                     location = "강남구",
                     address = "서울특별시 강남구 테헤란로 123",
-                    description = "강남 중심가에서 활기차게 일하실 크루분들을 모집합니다. 주말 야간 근무 가능자 우대합니다."
+                    description = "강남 중심가에서 활기차게 일하실 크루분들을 모집합니다. 주말 야간 근무 가능자 우대합니다.",
+                    workPeriod = "토, 일",
+                    workTime = "22:00 ~ 24:00"
                 ),
                 JobEntity(
                     title = "북카페 '문장'",
@@ -332,7 +338,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     preferences = "책에 대한 이해도가 높으신 분, 바리스타 자격증 소지자 우대",
                     location = "마포구",
                     address = "서울특별시 마포구 양화로 789",
-                    description = "책과 커피를 사랑하는 분들의 지원을 기다립니다. 조용한 분위기에서 꼼꼼하게 일하실 분 환영합니다."
+                    description = "책과 커피를 사랑하는 분들의 지원을 기다립니다. 조용한 분위기에서 꼼꼼하게 일하실 분 환영합니다.",
+                    workPeriod = "월, 수, 금",
+                    workTime = "14:00 ~ 18:00"
                 )
             )
             val jobIds = jobDao.insertAllJobs(jobs)
@@ -342,26 +350,26 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             val allJobTimes = mutableListOf<JobTimeEntity>()
 
-            for (time in 0..7) {
-                for (day in 0..4) {
+            for (time in 0..7) { // 07:00 ~ 11:00
+                for (day in 0..4) { //월~금
                     allJobTimes.add(JobTimeEntity(jobId = 1, timeIndex = day + (time * 7)))
                 }
             }
 
-            for (time in 10..17) {
-                for (day in 0..4) {
+            for (time in 10..17) { //12:00 ~ 16:00
+                for (day in 0..4) { //월~금
                     allJobTimes.add(JobTimeEntity(jobId = 2, timeIndex = day + (time * 7)))
                 }
             }
 
-            for (time in 30..35) {
-                for (day in 5..6) {
+            for (time in 30..35) { //22:00 ~ 24:00
+                for (day in 5..6) { //토, 일
                     allJobTimes.add(JobTimeEntity(jobId = 3, timeIndex = day + (time * 7)))
                 }
             }
 
-            for (time in 14..21) {
-                for (day in listOf(0, 2, 4)) {
+            for (time in 14..21) { //14:00 ~ 18:00
+                for (day in listOf(0, 2, 4)) { //월, 수, 금
                     allJobTimes.add(JobTimeEntity(jobId = 4, timeIndex = day + (time * 7)))
                 }
             }

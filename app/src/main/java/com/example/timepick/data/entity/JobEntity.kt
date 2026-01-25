@@ -11,6 +11,9 @@ data class JobEntity(
     @PrimaryKey(autoGenerate = true)
     val jobId: Int = 0,
 
+    val workPeriod: String,
+    val workTime: String,
+
     // 2. 상단 기본 정보
     val title: String,            // 알바공고 제목 (예: 알바공고1)
     val hourlyRate: Int,          // 시급 (예: 10320)
@@ -30,14 +33,14 @@ data class JobEntity(
     val description: String       // 상세 요강 텍스트
 )
 
-data class JobWithTimes(
+/*data class JobWithTimes(
     @Embedded val job: JobEntity,
     @Relation(
         parentColumn = "jobId",    // JobEntity의 PK
         entityColumn = "jobId"     // JobTimeEntity의 FK
     )
     val times: List<JobTimeEntity>
-)
+)*/
 
 // 매칭된 공고 정보와 일치율을 함께 담는 클래스
 data class MatchedJobResult(

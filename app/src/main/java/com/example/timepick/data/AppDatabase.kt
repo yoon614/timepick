@@ -16,6 +16,7 @@ import com.example.timepick.data.dao.AppliedJobDao
 import com.example.timepick.data.dao.ResumeDao
 import com.example.timepick.data.dao.WorkScheduleDao
 import com.example.timepick.data.entity.AppliedJobEntity
+import com.example.timepick.data.entity.JobWithTimes
 import com.example.timepick.data.entity.ResumeEntity
 import com.example.timepick.data.entity.WorkScheduleEntity
 
@@ -24,7 +25,8 @@ import com.example.timepick.data.entity.WorkScheduleEntity
 @Database(
     entities = [UserEntity::class, UserTimeEntity::class, JobEntity::class, JobTimeEntity::class,
         AppliedJobEntity::class, ResumeEntity::class, WorkScheduleEntity::class],
-    version = 5
+    version = 7,
+    exportSchema = false
 )
 
 abstract class AppDatabase : RoomDatabase() {
