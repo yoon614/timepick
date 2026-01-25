@@ -26,6 +26,7 @@ import java.time.LocalTime
 import kotlin.collections.forEach
 
 
+
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val database = AppDatabase.getInstance(application)
@@ -495,23 +496,36 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun saveWorkSchedule(schedule: WorkScheduleEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             if (schedule.isWeeklyFixed) {
-                val schedules = mutableListOf<WorkScheduleEntity>()
-                val groupId = System.currentTimeMillis() // 이번에 생성되는 52개 일정의 공통 ID
-                val startDate = LocalDate.parse(schedule.workDate)
+                // [매주 고정 일정 처리]
 
-                for (i in 0 until 52) { // 1년치 반복
+                // 1. 기존에 이미 생성된 고정 일정 그룹이 있다면, 수정 기준일(오늘/선택일) 이후 일정을 모두 삭제
+                if (schedule.groupId != 0L) {
+                    // 기존 groupId를 가진 일정 중 현재 수정하려는 날짜(workDate) 이후 데이터를 삭제하여 중복 방지
+                    // Change the line to this:
+                    workScheduleDao.deleteFutureSchedules(schedule.groupId ?: 0L, schedule.workDate)
+                }
+
+                // 2. 새로운 (혹은 기존) groupId 설정
+                val currentGroupId = if (schedule.groupId == 0L) System.currentTimeMillis() else schedule.groupId
+                val startDate = LocalDate.parse(schedule.workDate)
+                val schedules = mutableListOf<WorkScheduleEntity>()
+
+                // 3. 1년치(52주) 재생성
+                for (i in 0 until 52) {
                     val targetDate = startDate.plusWeeks(i.toLong()).toString()
                     schedules.add(
                         schedule.copy(
-                            id = 0, // 새 ID 생성을 위해 0으로 설정
+                            id = 0, // 중요: 새 id를 부여하여 덮어쓰기가 아닌 재생성 처리 (위에서 지웠으므로)
                             workDate = targetDate,
-                            groupId = groupId
+                            groupId = currentGroupId
                         )
                     )
                 }
                 workScheduleDao.insertSchedules(schedules)
+
             } else {
-                // 단일 일정 저장 (id가 0이 아니면 기존 데이터 수정으로 작동)
+                // [단일 일정 처리]
+                // OnConflictStrategy.REPLACE에 의해 id가 같으면 수정, 없으면 생성됨
                 workScheduleDao.insertSchedule(schedule)
             }
         }
