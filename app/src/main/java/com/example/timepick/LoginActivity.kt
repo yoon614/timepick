@@ -86,43 +86,47 @@ class LoginActivity : AppCompatActivity() {
      * 로그인 시도 (ViewModel 사용)
      */
     private fun attemptLogin() {
-        // 에러 메시지 초기화
+        // 1. 에러 메시지 초기화 (일단 숨김)
         tvErrorEmail.visibility = View.GONE
         tvErrorPw.visibility = View.GONE
 
         val email = etEmail.text.toString().trim()
         val pw = etPw.text.toString()
 
-        // 유효성 검사
+        // 2. 이메일 유효성 검사
         if (email.isEmpty()) {
-            Toast.makeText(this, "이메일을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            // 입력하지 않은 경우
+            tvErrorEmail.text = "아이디를 입력해주세요."
+            tvErrorEmail.visibility = View.VISIBLE
             etEmail.requestFocus()
             return
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "올바른 이메일 형식을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            // 형식이 올바르지 않은 경우
+            tvErrorEmail.text = "올바른 이메일 형식을 입력해주세요."
+            tvErrorEmail.visibility = View.VISIBLE
             etEmail.requestFocus()
             return
         }
 
+        // 3. 비밀번호 유효성 검사
         if (pw.isEmpty()) {
-            Toast.makeText(this, "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            // 입력하지 않은 경우
+            tvErrorPw.text = "비밀번호를 입력해주세요."
+            tvErrorPw.visibility = View.VISIBLE
             etPw.requestFocus()
             return
         }
 
-        // ViewModel을 통한 로그인 처리
+        // 4. ViewModel을 통한 로그인 처리
         viewModel.logIn(email, pw) { user ->
             if (user != null) {
-                // 로그인 성공
                 saveLoginInfo(user.userId.toString(), user.name)
                 loginSuccess()
             } else {
-                // 로그인 실패 (이메일 또는 비밀번호 불일치)
-                tvErrorEmail.visibility = View.VISIBLE
+                tvErrorPw.text = "이메일 또는 비밀번호가 올바르지 않습니다."
                 tvErrorPw.visibility = View.VISIBLE
-                Toast.makeText(this, "이메일 또는 비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
             }
         }
     }
