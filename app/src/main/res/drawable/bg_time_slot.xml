@@ -6,16 +6,14 @@
     <item android:state_selected="true">
         <shape android:shape="rectangle">
             <solid android:color="#0068FF" />
-            <stroke android:width="0.25dp" android:color="#FFFFFF" />
+            <stroke android:width="0.5dp" android:color="#FFFFFF" />
         </shape>
     </item>
 
     <!-- 선택되지 않은 기본 상태 -->
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@android:color/transparent" />
-            <stroke android:width="0.25dp" android:color="#FFFFFF" />
+            <solid android:color="#E9EAED" /> <stroke android:width="0.5dp" android:color="#ffffff" />
         </shape>
     </item>
-
 </selector>

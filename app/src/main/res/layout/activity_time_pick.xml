@@ -82,6 +82,7 @@
 
     <!-- 시간 선택 영역 (스크롤 가능) -->
     <ScrollView
+        android:id="@+id/sv_time_table"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scrollbars="none"
@@ -130,17 +131,25 @@
                     <TextView android:layout_width="match_parent" android:layout_height="60dp" android:gravity="center_horizontal" android:paddingTop="4dp" android:text="24:00" android:textColor="#A6AAB3" android:textSize="10sp" />
                 </LinearLayout>
 
-                <!-- 실제 시간 선택용 RecyclerView (7일 x 시간 그리드) -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_time_table"
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
-                    android:layout_height="1070dp"
-                    android:background="@drawable/bg_time_table_container"
-                    android:nestedScrollingEnabled="false"
-                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    app:spanCount="7"
-                    tools:itemCount="252"
-                    tools:listitem="@layout/item_time_slot" />
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#E9EAED">
+
+                    <!-- 실제 시간 선택용 RecyclerView (7일 x 시간 그리드) -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_time_table"
+                        android:layout_width="match_parent"
+                        android:layout_height="1085dp"
+                        android:background="@drawable/bg_time_table_container"
+                        android:nestedScrollingEnabled="false"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        app:spanCount="7"
+                        tools:itemCount="252"
+                        tools:listitem="@layout/item_time_slot" />
+                </androidx.cardview.widget.CardView>
             </LinearLayout>
 
             <!-- 타임픽 선택 완료 버튼 -->

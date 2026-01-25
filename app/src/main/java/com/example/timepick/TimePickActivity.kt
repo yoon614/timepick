@@ -2,7 +2,11 @@ package com.example.timepick
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -10,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -24,79 +29,45 @@ TimePickActivity
 
 class TimePickActivity : AppCompatActivity() {
 
-    private lateinit var rvTimeTable: RecyclerView
-    private lateinit var btnConfirm: Button
-    private lateinit var bottomNav: BottomNavigationView
-
+    private val selectedStates = MutableList(252) { false }
     private lateinit var viewModel: MainViewModel
-    private lateinit var timeSlotAdapter: TimeSlotAdapter
-    private val selectedSlots = BooleanArray(252) { false }
+    private lateinit var adapter: TimePickAdapter
+    private lateinit var rvTimeTable: RecyclerView
     private var userId: Int = 0
+
+    // 드래그 상태 관리 변수
+    private var isDragging = false
+    private var initialSelectionState = false
+    private var lastTouchedPosition = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_time_pick)
 
-        viewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-        )[MainViewModel::class.java]
-
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         loadUserInfo()
-        initViews()
 
-        if (userId != 0) {
-            //loadPreviousSelection() //이 부분 주석처리
-        }
-
-        setupRecyclerView()
-        setupClickListeners()
-        setupBottomNavigation()
-    }
-
-    private fun loadUserInfo() {
-        val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
-        val userIdString = sharedPref.getString("USER_ID", "0") ?: "0"
-        userId = userIdString.toIntOrNull() ?: 0
-        android.util.Log.d("TimePickActivity", "로드된 userId: $userId")
-    }
-
-    private fun initViews() {
         rvTimeTable = findViewById(R.id.rv_time_table)
-        btnConfirm = findViewById(R.id.btn_timepick_confirm)
-        bottomNav = findViewById(R.id.bottom_navigation)
-    }
+        val btnConfirm = findViewById<Button>(R.id.btn_timepick_confirm)
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
-    private fun loadPreviousSelection() {
-        // 먼저 배열 초기화
-        for (i in selectedSlots.indices) {
-            selectedSlots[i] = false
-        }
-
-        viewModel.loadUserTimes(userId) { savedIndices ->
-            android.util.Log.d("TimePickActivity", "userId: $userId, 이전 선택 데이터: ${savedIndices.size}개")
-            savedIndices.forEach { index ->
-                if (index in 0 until 252) {
-                    selectedSlots[index] = true
-                }
-            }
-            timeSlotAdapter.notifyDataSetChanged()
-        }
-    }
-
-    private fun setupRecyclerView() {
+        // 1. 표 레이아웃 매니저 설정
         rvTimeTable.layoutManager = GridLayoutManager(this, 7)
-        timeSlotAdapter = TimeSlotAdapter(selectedSlots) { position ->
-            selectedSlots[position] = !selectedSlots[position]
-        }
-        rvTimeTable.adapter = timeSlotAdapter
-    }
 
-    private fun setupClickListeners() {
+        // 깜빡임 방지
+        (rvTimeTable.itemAnimator as? androidx.recyclerview.widget.SimpleItemAnimator)?.supportsChangeAnimations = false
+
+        adapter = TimePickAdapter()
+        rvTimeTable.adapter = adapter
+
+        if (userId != 0) loadPreviousSelection()
+
+        // 2. 오토 스크롤 드래그 기능 적용
+        setupDragSelection()
+
+        // 3. 확인 버튼 클릭 (DB 저장 및 이동)
         btnConfirm.setOnClickListener {
-            val selectedIndices = selectedSlots.indices.filter { selectedSlots[it] }
-            android.util.Log.d("TimePickActivity", "=== 확인 버튼 클릭 ===")
-            android.util.Log.d("TimePickActivity", "선택된 시간 개수: ${selectedIndices.size}")
+            val selectedIndices = selectedStates.indices.filter { selectedStates[it] }
 
             if (userId == 0) {
                 Toast.makeText(this, "로그인 정보가 없습니다.", Toast.LENGTH_SHORT).show()
@@ -104,94 +75,153 @@ class TimePickActivity : AppCompatActivity() {
             }
 
             if (selectedIndices.isEmpty()) {
-                android.util.Log.d("TimePickActivity", "=== 시간 미선택 - 전체 공고 표시 ===")
+                // 선택 안 함 -> 전체 검색
                 lifecycleScope.launch {
-                    val database = com.example.timepick.data.AppDatabase.getInstance(applicationContext)
-                    val dbJobs = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                        database.jobDao().getAllJobsWithTimes()
-                    }
-
-                    android.util.Log.d("TimePickActivity", "DB에서 조회한 공고 개수: ${dbJobs.size}")
-
-                    if (dbJobs.isEmpty()) {
-                        android.util.Log.e("TimePickActivity", "❌ DB에 공고가 없습니다!")
-                        Toast.makeText(this@TimePickActivity,
-                            "공고 데이터가 없습니다. 앱을 재설치해주세요.",
-                            Toast.LENGTH_LONG).show()
-                        return@launch
-                    }
-
-                    dbJobs.forEach { job ->
-                        android.util.Log.d("TimePickActivity",
-                            "공고: ${job.job.title}, 시간: ${job.times.size}개")
-                    }
-
-                    android.util.Log.d("TimePickActivity", "findMatchingJobs(빈 리스트) 호출")
                     viewModel.findMatchingJobs(emptyList())
-
-                    kotlinx.coroutines.delay(500)
-
-                    val matchedJobs = viewModel.matchedJobs.value
-                    android.util.Log.d("TimePickActivity", "StateFlow에 저장된 공고 개수: ${matchedJobs.size}")
-
-                    if (matchedJobs.isEmpty()) {
-                        android.util.Log.e("TimePickActivity", "❌ StateFlow가 비어있습니다!")
-                    }
-
-                    android.util.Log.d("TimePickActivity", "JobListActivity로 이동")
+                    delay(500)
                     val intent = Intent(this@TimePickActivity, JobListActivity::class.java)
                     intent.putExtra("TIME_SELECTED", false)
                     startActivity(intent)
                 }
             } else {
-                android.util.Log.d("TimePickActivity", "=== 시간 선택함 - DB 저장 및 매칭 ===")
-                android.util.Log.d("TimePickActivity", "선택된 인덱스: $selectedIndices")
-
+                // 선택 함 -> 저장 후 매칭
                 viewModel.saveUserTimes(userId, selectedIndices) { success ->
-                    android.util.Log.d("TimePickActivity", "시간 저장 결과: $success")
-
                     if (success) {
                         lifecycleScope.launch {
-                            android.util.Log.d("TimePickActivity", "findMatchingJobs 호출")
                             viewModel.findMatchingJobs(selectedIndices)
-
-                            kotlinx.coroutines.delay(500)
-
-                            val matchedJobs = viewModel.matchedJobs.value
-                            android.util.Log.d("TimePickActivity", "매칭된 공고 개수: ${matchedJobs.size}")
-
+                            delay(500)
                             val intent = Intent(this@TimePickActivity, JobListActivity::class.java)
                             intent.putExtra("TIME_SELECTED", true)
                             startActivity(intent)
                         }
                     } else {
-                        Toast.makeText(this@TimePickActivity, "시간 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@TimePickActivity, "저장 실패", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         }
+
+        // 4. 하단 네비게이션 설정
+        setupBottomNavigation(bottomNav)
     }
 
-    private fun setupBottomNavigation() {
-        bottomNav.selectedItemId = R.id.nav_home
+    // 오토 스크롤이 포함된 드래그 로직 함수
+    private fun setupDragSelection() {
+        // XML에서 추가한 ScrollView 가져오기
+        val scrollView = findViewById<ScrollView>(R.id.sv_time_table)
 
+        rvTimeTable.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
+
+            private val SCROLL_SPEED = 20
+            private val SCROLL_ZONE_HEIGHT = 150
+
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                val action = e.action
+                val x = e.x
+                val y = e.y
+
+                // 1. 드래그 중 스크롤 뷰 간섭 방지
+                if (action == MotionEvent.ACTION_MOVE) {
+                    rv.parent.requestDisallowInterceptTouchEvent(true)
+                }
+
+                // 2. 오토 스크롤 로직
+                if (action == MotionEvent.ACTION_MOVE && isDragging) {
+                    val location = IntArray(2)
+                    rv.getLocationOnScreen(location)
+                    val rvTopOnScreen = location[1]
+                    val touchYOnScreen = rvTopOnScreen + y
+                    val screenHeight = rv.resources.displayMetrics.heightPixels
+
+                    // (1) 아래쪽 끝에 닿았을 때 -> 아래로 스크롤
+                    if (touchYOnScreen > screenHeight - SCROLL_ZONE_HEIGHT) {
+                        scrollView.smoothScrollBy(0, SCROLL_SPEED)
+                    }
+                    // (2) 위쪽 끝에 닿았을 때 -> 위로 스크롤
+                    else if (touchYOnScreen < rvTopOnScreen + SCROLL_ZONE_HEIGHT) {
+                        scrollView.smoothScrollBy(0, -SCROLL_SPEED)
+                    }
+                }
+
+                // 3. 드래그 선택 로직
+                when (action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        val view = rv.findChildViewUnder(x, y)
+                        if (view != null) {
+                            val position = rv.getChildAdapterPosition(view)
+                            if (position != RecyclerView.NO_POSITION) {
+                                isDragging = true
+                                lastTouchedPosition = position
+                                initialSelectionState = !selectedStates[position]
+                                toggleSlot(position, initialSelectionState)
+                            }
+                        }
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        if (isDragging) {
+                            val view = rv.findChildViewUnder(x, y)
+                            if (view != null) {
+                                val position = rv.getChildAdapterPosition(view)
+                                if (position != RecyclerView.NO_POSITION && position != lastTouchedPosition) {
+                                    lastTouchedPosition = position
+                                    toggleSlot(position, initialSelectionState)
+                                }
+                            }
+                        }
+                    }
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        isDragging = false
+                        lastTouchedPosition = -1
+                        rv.parent.requestDisallowInterceptTouchEvent(false) // 터치 끝나면 스크롤 잠금 해제
+                    }
+                }
+                return false
+            }
+
+            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
+            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
+        })
+    }
+
+    // 칸 상태 변경 헬퍼 함수
+    private fun toggleSlot(position: Int, state: Boolean) {
+        if (selectedStates[position] != state) {
+            selectedStates[position] = state
+            adapter.notifyItemChanged(position)
+        }
+    }
+
+    private fun loadUserInfo() {
+        val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
+        val userIdString = sharedPref.getString("USER_ID", "0") ?: "0"
+        userId = userIdString.toIntOrNull() ?: 0
+    }
+
+    // 이전 데이터 불러오기
+    private fun loadPreviousSelection() {
+        viewModel.loadUserTimes(userId) { savedIndices ->
+            for (i in selectedStates.indices) {
+                selectedStates[i] = false
+            }
+            savedIndices.forEach { index ->
+                if (index in selectedStates.indices) selectedStates[index] = true
+            }
+            adapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun setupBottomNavigation(bottomNav: BottomNavigationView) {
+        bottomNav.selectedItemId = R.id.nav_home
         bottomNav.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_calendar -> {
-                    val intent = Intent(this@TimePickActivity, CalendarActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    startActivity(intent)
+                    startActivity(Intent(this, CalendarActivity::class.java))
                     finish()
                     true
                 }
-                R.id.nav_home -> {
-                    // 현재 화면 (타임테이블)
-                    true
-                }
+                R.id.nav_home -> true
                 R.id.nav_mypage -> {
-                    val intent = Intent(this@TimePickActivity, MyPageActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    startActivity(intent)
+                    startActivity(Intent(this, MyPageActivity::class.java))
                     finish()
                     true
                 }
@@ -199,49 +229,22 @@ class TimePickActivity : AppCompatActivity() {
             }
         }
     }
-}
 
-class TimeSlotAdapter(
-    private val selectedSlots: BooleanArray,
-    private val onSlotClick: (Int) -> Unit
-) : RecyclerView.Adapter<TimeSlotAdapter.TimeSlotViewHolder>() {
+    // 내부 어댑터 클래스
+    inner class TimePickAdapter : RecyclerView.Adapter<TimePickAdapter.ViewHolder>() {
 
-    class TimeSlotViewHolder(val frameLayout: android.widget.FrameLayout) :
-        RecyclerView.ViewHolder(frameLayout)
-
-    override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): TimeSlotViewHolder {
-        val frameLayout = android.widget.FrameLayout(parent.context).apply {
-            layoutParams = RecyclerView.LayoutParams(
-                RecyclerView.LayoutParams.MATCH_PARENT,
-                30.dpToPx(parent.context)
-            )
-            setBackgroundResource(R.drawable.bg_time_slot)
-            isClickable = true
-            isFocusable = true
-        }
-        return TimeSlotViewHolder(frameLayout)
-    }
-
-    override fun onBindViewHolder(holder: TimeSlotViewHolder, position: Int) {
-        val isSelected = selectedSlots[position]
-
-        if (isSelected) {
-            holder.frameLayout.setBackgroundColor(
-                android.graphics.Color.parseColor("#0068FF")
-            )
-        } else {
-            holder.frameLayout.setBackgroundResource(R.drawable.bg_time_slot)
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = android.view.LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_time_slot, parent, false)
+            return ViewHolder(view)
         }
 
-        holder.frameLayout.setOnClickListener {
-            onSlotClick(position)
-            notifyItemChanged(position)
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            holder.itemView.isSelected = selectedStates[position]
         }
-    }
 
-    override fun getItemCount(): Int = selectedSlots.size
+        override fun getItemCount(): Int = 252
 
-    private fun Int.dpToPx(context: android.content.Context): Int {
-        return (this * context.resources.displayMetrics.density).toInt()
+        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
     }
 }
