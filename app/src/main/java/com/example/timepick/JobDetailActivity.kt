@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.material.button.MaterialButton
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -43,7 +44,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var viewModel: MainViewModel
     private lateinit var btnBack: ImageButton
     private lateinit var tvCompanyName: TextView
-    private lateinit var btnResume: Button
+    private lateinit var btnResume: MaterialButton
     private lateinit var btnApply: Button
     private lateinit var layoutDetailContent: LinearLayout
 
