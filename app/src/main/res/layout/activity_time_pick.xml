@@ -134,7 +134,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_time_table"
                     android:layout_width="match_parent"
-                    android:layout_height="1080dp"
+                    android:layout_height="1070dp"
                     android:background="@drawable/bg_time_table_container"
                     android:nestedScrollingEnabled="false"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
