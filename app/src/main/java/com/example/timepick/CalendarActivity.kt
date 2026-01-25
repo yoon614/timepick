@@ -80,6 +80,11 @@ class CalendarActivity : AppCompatActivity() {
 
         loadUserId()
         initViews()
+
+        // 오늘 날짜로 초기화
+        val formatter = DateTimeFormatter.ofPattern("M월 d일 (E)")
+        tvSelectedDate.text = selectedDate.format(formatter)
+
         setupRecyclerView()
         setupCalendar()
         setupClickListeners()
@@ -94,7 +99,9 @@ class CalendarActivity : AppCompatActivity() {
         super.onResume()
         // 네비게이션 바 선택 상태 재설정
         bottomNav.selectedItemId = R.id.nav_calendar
-        // 화면 복귀 시 데이터 새로고침
+        // 데이터 완전 새로고침
+        scheduleData.clear()
+        // 화면 복귀 시 데이터 새로고침 (내부에서 loadSchedulesByDate 호출함)
         loadMonthlyData(currentMonth)
     }
 
