@@ -20,6 +20,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 앱 재실행 시 로그인 상태 유지
+        // SharedPreferences으로 로그인 여부 조회
+        val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
+        val isLoggedIn = sharedPref.getBoolean("IS_LOGGED_IN", false)
+
+        // 이미 로그인 된 상태 -> TimePick 화면으로 이동
+        if(isLoggedIn) {
+            startActivity(Intent(this, TimePickActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_main)
 
         // View 초기화
