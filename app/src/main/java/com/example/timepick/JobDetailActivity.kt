@@ -36,7 +36,7 @@ JobDetailActivity - 공고 상세 화면
 - 공고의 모든 상세 정보 표시 (급여, 업종, 고용형태, 모집조건, 근무지역, 상세요강)
 - 이미 지원한 공고인지 확인 -> 지원 완료면 버튼 회색 + 비활성화
 - 이력서 확인 버튼 -> 이력서 있으면 ResumeDetailActivity, 없으면 토스트 + ResumeEditActivity
-- 지원하기 버튼 -> DB에 지원 내역 저장 후 ApplyCompleteActivity로 이동
+- 지원하기 버튼
 - 구글 지도 API 연동 (OnMapReadyCallback 구현)
  */
 class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -101,8 +101,6 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     // 지도가 준비되면 호출되는 콜백 (OnMapReadyCallback)
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
-
-        // 지도가 준비되었는데 데이터도 이미 로드된 상태라면 마커 표시
         currentJob?.let { job ->
             updateMapLocation(job.address, job.title)
         }
@@ -112,11 +110,9 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun updateMapLocation(address: String, title: String) {
         if (googleMap == null) return
 
-        // 네트워크 작업(Geocoding)은 백그라운드 스레드에서 수행
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val geocoder = Geocoder(this@JobDetailActivity)
-                // 주소로 좌표 찾기 (최대 1개 결과)
                 @Suppress("DEPRECATION")
                 val addresses = geocoder.getFromLocationName(address, 1)
 
@@ -124,12 +120,11 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                     val location = addresses[0]
                     val latLng = LatLng(location.latitude, location.longitude)
 
-                    // UI 업데이트(지도 이동)는 메인 스레드에서 수행
                     withContext(Dispatchers.Main) {
                         googleMap?.apply {
-                            clear() // 기존 마커 지우기
+                            clear()
                             addMarker(MarkerOptions().position(latLng).title(title))
-                            moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f)) // 줌 레벨 16
+                            moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
                         }
                     }
                 } else {
@@ -202,8 +197,6 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun displayJobInfo(job: JobEntity) {
         tvCompanyName.text = job.title
         updateTextViews(layoutDetailContent, job)
-
-        // 공고 정보 로드 완료 시 지도 위치 업데이트
         updateMapLocation(job.address, job.title)
     }
 
@@ -267,6 +260,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             finish()
         }
 
+        // 이력서 확인 버튼
         btnResume.setOnClickListener {
             val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
             val isLoggedIn = sharedPref.getBoolean("IS_LOGGED_IN", false)
@@ -288,12 +282,13 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
+        // 지원하기 버튼
         btnApply.setOnClickListener {
             applyForJob()
         }
     }
 
-    // 지원하기 버튼 클릭 처리
+    // 지원하기 버튼 로직
     private fun applyForJob() {
         val sharedPref = getSharedPreferences("TimePick", MODE_PRIVATE)
         val isLoggedIn = sharedPref.getBoolean("IS_LOGGED_IN", false)
@@ -308,23 +303,37 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             return
         }
 
-        // DB에 지원 내역 저장
-        viewModel.applyToJob(userId, jobId)
+        // 1. 이력서 존재 여부 먼저 확인
+        viewModel.checkResumeExists(userId) { hasResume ->
+            if (hasResume) {
+                // [Case A] 이력서가 있음 -> 바로 지원 처리 및 DB 저장
+                viewModel.applyToJob(userId, jobId)
 
-        Toast.makeText(this, "지원이 완료되었습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "지원이 완료되었습니다.", Toast.LENGTH_SHORT).show()
 
-        // 버튼 비활성화
-        btnApply.apply {
-            text = "지원 완료"
-            backgroundTintList = android.content.res.ColorStateList.valueOf(
-                android.graphics.Color.parseColor("#A6AAB3")
-            )
-            isEnabled = false
+                // 버튼 비활성화 (지원 완료 상태)
+                btnApply.apply {
+                    text = "지원 완료"
+                    backgroundTintList = android.content.res.ColorStateList.valueOf(
+                        android.graphics.Color.parseColor("#A6AAB3")
+                    )
+                    isEnabled = false
+                }
+
+                // 지원 완료 화면으로 이동
+                val intent = Intent(this, ApplyCompleteActivity::class.java)
+                intent.putExtra("JOB_ID", jobId)
+                intent.putExtra("COMPANY_NAME", currentJob?.title)
+                startActivity(intent)
+
+            } else {
+                // [Case B] 이력서가 없음 -> 지원 방식 선택 화면으로 이동 (아직 DB 저장 안 함)
+                // ApplyMethodActivity에서 '이력서 없이 지원'을 눌러야 DB에 저장됨
+                val intent = Intent(this, ApplyMethodActivity::class.java)
+                intent.putExtra("JOB_ID", jobId) // 나중에 지원 처리를 위해 전달
+                intent.putExtra("COMPANY_NAME", currentJob?.title)
+                startActivity(intent)
+            }
         }
-
-        val intent = Intent(this, ApplyCompleteActivity::class.java)
-        intent.putExtra("JOB_ID", jobId)
-        intent.putExtra("COMPANY_NAME", currentJob?.title)
-        startActivity(intent)
     }
 }
