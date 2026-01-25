@@ -21,14 +21,12 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 /**
- * WorkEditActivity - 근무 일정 추가/수정 화면
- *
- * 플로우:
- * - 근무지, 근무시간, 시급 입력
- * - 드롭다운 메뉴로 시간 선택
- * - 매주 고정 근무 체크박스
- * - 완료 버튼 클릭 → DB 저장 후 종료
- * - 매주 고정 해제 시 → groupId 전체 삭제 후 해당 날짜만 재생성
+WorkEditActivity - 근무 일정 추가/수정 화면
+
+플로우:
+- 근무지, 근무시간, 시급 입력
+- 매주 고정 근무 체크박스
+- 완료 버튼 클릭 → DB 저장 후 종료
  */
 class WorkEditActivity : AppCompatActivity() {
 
@@ -284,7 +282,29 @@ class WorkEditActivity : AppCompatActivity() {
             return  // 여기서 함수 종료
         }
 
-        // 일반적인 저장 (신규 추가 or 일반 수정)
+        // 수정 모드이고, 매주 고정 → 매주 고정 (내용만 수정)
+        if (existingSchedule != null && existingSchedule!!.isWeeklyFixed && isWeeklyFixed) {
+            // 해당 날짜의 일정만 수정 (다른 주는 그대로 유지)
+            val schedule = WorkScheduleEntity(
+                id = existingSchedule!!.id,  // 기존 id 유지 (REPLACE)
+                userId = userId,
+                workplaceName = place,
+                workDate = selectedDate,
+                startTime = startTime,
+                endTime = endTime,
+                hourlyRate = wageInt,
+                applyTax = false,
+                isWeeklyFixed = true,
+                groupId = existingSchedule!!.groupId  // groupId 유지
+            )
+
+            viewModel.saveWorkSchedule(schedule)
+            Toast.makeText(this, "해당 날짜의 일정이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+            finish()
+            return  // 여기서 함수 종료
+        }
+
+        // 일반적인 저장 (신규 추가)
         val schedule = WorkScheduleEntity(
             id = existingSchedule?.id ?: 0,
             userId = userId,

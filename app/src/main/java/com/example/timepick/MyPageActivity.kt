@@ -120,6 +120,16 @@ class MyPageActivity : AppCompatActivity() {
                     cardView.findViewById<TextView>(R.id.tv_resume_name)?.text = it.name
                     cardView.findViewById<TextView>(R.id.tv_resume_location)?.text = it.desiredRegion
                     cardView.findViewById<TextView>(R.id.tv_resume_category)?.text = it.desiredJob
+
+                    // 작성일자 표시
+                    cardView.findViewById<TextView>(R.id.tv_resume_date)?.let { tvDate ->
+                        if (!it.updatedDate.isNullOrBlank()) {
+                            tvDate.text = "작성일자: ${it.updatedDate}"
+                            tvDate.visibility = View.VISIBLE
+                        } else {
+                            tvDate.visibility = View.GONE
+                        }
+                    }
                 }
             }
 
