@@ -196,47 +196,67 @@ class WorkEditActivity : AppCompatActivity() {
         if (existingSchedule != null && existingSchedule!!.isWeeklyFixed && !isWeeklyFixed) {
             val groupId = existingSchedule!!.groupId
 
-            if (groupId != null) {
-                // groupId로 묶인 모든 일정 삭제 후 단일 일정으로 재생성
-                lifecycleScope.launch(Dispatchers.IO) {
-                    try {
-                        val database = com.example.timepick.data.AppDatabase.getInstance(applicationContext)
-                        val dao = database.workScheduleDao()
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    val database = com.example.timepick.data.AppDatabase.getInstance(applicationContext)
+                    val dao = database.workScheduleDao()
 
-                        // 1. groupId로 묶인 모든 일정 삭제
-                        dao.deleteFutureSchedules(groupId, "1900-01-01")  // 모든 날짜 삭제
+                    if (groupId != null && groupId != 0L) {
+                        // groupId가 있는 경우: groupId로 모든 연관 일정 삭제
+                        dao.deleteFutureSchedules(groupId, "1900-01-01")
+                    } else {
+                        // groupId가 null인 경우: 같은 요일의 매주 고정 일정들을 찾아서 삭제
+                        val targetDayOfWeek = LocalDate.parse(selectedDate).dayOfWeek
+                        val currentDate = LocalDate.parse(selectedDate)
 
-                        // 2. 해당 날짜만 단일 일정으로 재생성
-                        val newSchedule = WorkScheduleEntity(
-                            id = 0,
-                            userId = userId,
-                            workplaceName = place,
-                            workDate = selectedDate,
-                            startTime = startTime,
-                            endTime = endTime,
-                            hourlyRate = wageInt,
-                            applyTax = false,
-                            isWeeklyFixed = false,
-                            groupId = null
-                        )
-                        dao.insertSchedule(newSchedule)
+                        // 52주치 검색 (과거 + 미래)
+                        for (week in -52..52) {
+                            val checkDate = currentDate.plusWeeks(week.toLong())
+                            val schedulesOnDate = dao.getSchedulesByDate(userId, checkDate.toString())
 
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(this@WorkEditActivity,
-                                "매주 고정 일정이 해제되었습니다ㅔ.",
-                                Toast.LENGTH_LONG).show()
-                            finish()
-                        }
-                    } catch (e: Exception) {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(this@WorkEditActivity,
-                                "일정 수정 중 오류가 발생했습니다.",
-                                Toast.LENGTH_SHORT).show()
+                            schedulesOnDate.forEach { sch ->
+                                // 같은 근무지, 시간, 시급이고 매주 고정인 일정 삭제
+                                if (sch.isWeeklyFixed &&
+                                    sch.workplaceName == existingSchedule!!.workplaceName &&
+                                    sch.startTime == existingSchedule!!.startTime &&
+                                    sch.endTime == existingSchedule!!.endTime &&
+                                    sch.hourlyRate == existingSchedule!!.hourlyRate) {
+                                    dao.deleteSchedule(sch)
+                                }
+                            }
                         }
                     }
+
+                    // 해당 날짜만 단일 일정으로 재생성
+                    val newSchedule = WorkScheduleEntity(
+                        id = 0,
+                        userId = userId,
+                        workplaceName = place,
+                        workDate = selectedDate,
+                        startTime = startTime,
+                        endTime = endTime,
+                        hourlyRate = wageInt,
+                        applyTax = false,
+                        isWeeklyFixed = false,
+                        groupId = null
+                    )
+                    dao.insertSchedule(newSchedule)
+
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@WorkEditActivity,
+                            "매주 고정 일정이 해제되었습니다.",
+                            Toast.LENGTH_LONG).show()
+                        finish()
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@WorkEditActivity,
+                            "일정 수정 중 오류가 발생했습니다.",
+                            Toast.LENGTH_SHORT).show()
+                    }
                 }
-                return  // 여기서 함수 종료
             }
+            return
         }
 
         // 수정 모드이고, 단일 → 매주 고정으로 변경한 경우
@@ -282,26 +302,73 @@ class WorkEditActivity : AppCompatActivity() {
             return  // 여기서 함수 종료
         }
 
-        // 수정 모드이고, 매주 고정 → 매주 고정 (내용만 수정)
-        if (existingSchedule != null && existingSchedule!!.isWeeklyFixed && isWeeklyFixed) {
-            // 해당 날짜의 일정만 수정 (다른 주는 그대로 유지)
-            val schedule = WorkScheduleEntity(
-                id = existingSchedule!!.id,  // 기존 id 유지 (REPLACE)
-                userId = userId,
-                workplaceName = place,
-                workDate = selectedDate,
-                startTime = startTime,
-                endTime = endTime,
-                hourlyRate = wageInt,
-                applyTax = false,
-                isWeeklyFixed = true,
-                groupId = existingSchedule!!.groupId  // groupId 유지
-            )
 
-            viewModel.saveWorkSchedule(schedule)
-            Toast.makeText(this, "해당 날짜의 일정이 수정되었습니다.", Toast.LENGTH_SHORT).show()
-            finish()
-            return  // 여기서 함수 종료
+        // 수정 모드이고, 매주 고정 → 매주 고정 (모든 매주 고정 일정 수정)
+        if (existingSchedule != null && existingSchedule!!.isWeeklyFixed && isWeeklyFixed) {
+            val groupId = existingSchedule!!.groupId
+
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    val database = com.example.timepick.data.AppDatabase.getInstance(applicationContext)
+                    val dao = database.workScheduleDao()
+
+                    if (groupId != null && groupId != 0L) {
+                        // groupId가 있는 경우: groupId로 모든 연관 일정 찾아서 수정
+                        val currentDate = LocalDate.parse(selectedDate)
+
+                        for (week in -52..52) {
+                            val checkDate = currentDate.plusWeeks(week.toLong())
+                            val schedulesOnDate = dao.getSchedulesByDate(userId, checkDate.toString())
+
+                            schedulesOnDate.forEach { sch ->
+                                if (sch.groupId == groupId) {
+                                    val updatedSchedule = sch.copy(
+                                        workplaceName = place,
+                                        startTime = startTime,
+                                        endTime = endTime,
+                                        hourlyRate = wageInt
+                                    )
+                                    dao.insertSchedule(updatedSchedule)
+                                }
+                            }
+                        }
+                    } else {
+                        // groupId가 null인 경우: 같은 조건의 매주 고정 일정 모두 찾아서 수정
+                        val currentDate = LocalDate.parse(selectedDate)
+
+                        for (week in -52..52) {
+                            val checkDate = currentDate.plusWeeks(week.toLong())
+                            val schedulesOnDate = dao.getSchedulesByDate(userId, checkDate.toString())
+
+                            schedulesOnDate.forEach { sch ->
+                                if (sch.isWeeklyFixed &&
+                                    sch.workplaceName == existingSchedule!!.workplaceName &&
+                                    sch.startTime == existingSchedule!!.startTime &&
+                                    sch.endTime == existingSchedule!!.endTime &&
+                                    sch.hourlyRate == existingSchedule!!.hourlyRate) {
+                                    val updatedSchedule = sch.copy(
+                                        workplaceName = place,
+                                        startTime = startTime,
+                                        endTime = endTime,
+                                        hourlyRate = wageInt
+                                    )
+                                    dao.insertSchedule(updatedSchedule)
+                                }
+                            }
+                        }
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@WorkEditActivity, "모든 매주 고정 일정이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@WorkEditActivity, "일정 수정 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            return
         }
 
         // 일반적인 저장 (신규 추가)
